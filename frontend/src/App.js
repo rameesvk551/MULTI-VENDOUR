@@ -1,10 +1,17 @@
+import { BrowserRouter, Route,Routes } from "react-router-dom";
 import "./App.css";
+import { LoginPage, SignupPage } from "./Routes";
+
+
 
 const App = () => {
   return (
-    <div className="bg-red-300">
-      h1g3fregb
-    </div>
+   <BrowserRouter>
+   <Routes>
+    <Route path="/login" element={<LoginPage/>}/>
+    <Route path="/signup" element={<SignupPage/>}/>
+   </Routes>
+   </BrowserRouter>
   );
 };
 
