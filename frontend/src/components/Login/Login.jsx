@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import {AiOutlineEye, AiOutlineEyeInvisible }from 'react-icons/ai'
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/style";
 import { Link } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- const [visible,setVisible]=useState(false)
- 
+  const [visible, setVisible] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -41,53 +41,62 @@ function Login() {
 
             {/* Password Field */}
             <div>
-  <label
-    htmlFor="password"
-    className="block text-sm font-medium text-gray-700"
-  >
-    Password
-  </label>
-  <div className="mt-1 relative">
-    <input
-      type={visible ? "text" : "password"}
-      name="password"
-      autoComplete="current-password"
-      required
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded shadow-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-    />
-    {visible ? (
-      <AiOutlineEyeInvisible
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600"
-        size={20}
-        onClick={() => setVisible(false)}
-      />
-    ) : (
-      <AiOutlineEye
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600"
-        size={20}
-        onClick={() => setVisible(true)}
-      />
-    )}
-  </div>
-</div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  type={visible ? "text" : "password"}
+                  name="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded shadow-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+                {visible ? (
+                  <AiOutlineEyeInvisible
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600"
+                    size={20}
+                    onClick={() => setVisible(false)}
+                  />
+                ) : (
+                  <AiOutlineEye
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600"
+                    size={20}
+                    onClick={() => setVisible(true)}
+                  />
+                )}
+              </div>
+            </div>
 
-
-<div className={`${styles.noramlFlex} justify-between`}>
-<div className={`${styles.noramlFlex}`}>
-    <input type="checkbox" name="remember-me" id="remember-me"
-    className="h-4 w-4 text-blue-600 focus: ring-blue-500 border-gray-300 rounded" />
-    <label htmlFor="remember-me"
-    className="m1-2 block text-sm text-gray-900">Remember me</label>
-</div>
-<div className="text-sm">
-    <a href="#"
-    className="font-medium text-blue-600 hover:text-blue-500">
-        Forgot your password?
-    </a>
-</div>
-</div>
+            <div className={`${styles.noramlFlex} justify-between`}>
+              <div className={`${styles.noramlFlex}`}>
+                <input
+                  type="checkbox"
+                  name="remember-me"
+                  id="remember-me"
+                  className="h-4 w-4 text-blue-600 focus: ring-blue-500 border-gray-300 rounded"
+                />
+                <label
+                  htmlFor="remember-me"
+                  className="m1-2 block text-sm text-gray-900"
+                >
+                  Remember me
+                </label>
+              </div>
+              <div className="text-sm">
+                <a
+                  href="#"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                  Forgot your password?
+                </a>
+              </div>
+            </div>
             {/* Submit Button */}
             <div>
               <button
@@ -97,11 +106,11 @@ function Login() {
                 Sign In
               </button>
             </div>
-            <div className={`${styles.noramlFlex} w-full` }>
-                <h4>Not have any account</h4>
-                <Link to={'/signup'}  className="text-blue-600 pl-2">
+            <div className={`${styles.noramlFlex} w-full`}>
+              <h4>Not have any account</h4>
+              <Link to={"/signup"} className="text-blue-600 pl-2">
                 SignUp
-                </Link>
+              </Link>
             </div>
           </form>
         </div>
