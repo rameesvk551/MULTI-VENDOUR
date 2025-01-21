@@ -1,22 +1,28 @@
-const express = require("express")
-const ErrorHandler = require("./utils/ErrorHandler")
-const app=express()
-const cookieParser=require("cookie-parser")
-const bodyParser=require("body-parser")
-const fileUpload=require("express-fileupload")
-app.use(express.json())
-app.use(cookieParser())
-app.use(bodyParser.urlencoded({extended:true}))
-app.use(fileUpload({useTempFiles:true}))
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const errorMiddleware = require("./middleware/error"); // Error middleware
+const user = require("./controller/user");
 
-//config
-if(process.env.NODE_ENV !== "PRODUCTION"){
-    require("dotenv").config({
-        path:"backend/config/.env"
-    })
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+app.use("/", express.static("uploads"));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Config
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  require("dotenv").config({ path: "backend/config/.env" });
 }
 
-//its for error handling
-app.use(ErrorHandler)
+// Routes
+app.use("/api/v2",user);
 
-module.exports=app
+// Error Handling Middleware (must come after routes)
+app.use(errorMiddleware);
+
+module.exports = app;

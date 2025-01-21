@@ -1,9 +1,12 @@
+import axios from 'axios'
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import styles from "../../styles/style";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { server } from '../../server';
 function Signup() {
+  const navigate=useNavigate()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [conformPassword, setConformPassword] = useState("");
@@ -11,8 +14,26 @@ function Signup() {
   const [visible, setVisible] = useState(false);
   const [avator, setAvator] = useState(null);
 
-  const handleSubmit = () => {
-    console.log("hhh");
+  const handleSubmit =async (e) => {
+e.preventDefault()
+    const config={headers:{"content-Type":"multipart/form-data"}}
+
+    const newForm= new FormData()
+    newForm.append("file",avator)
+    newForm.append("name",name)
+    newForm.append("email",email)
+    newForm.append("password",password)
+    newForm.append("conformPassword",conformPassword)
+    axios.post(`${server}/create-user`,newForm,config)
+    .then((res)=>{
+      if(res.data.success === true){
+        navigate("/")
+      }
+      console.log("daaaaaaaata",res);  
+    }).catch((err)=>{
+      console.log(err); 
+    })
+   
   };
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
@@ -28,7 +49,7 @@ function Signup() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {/*Name */}
             <div>
               <label
@@ -117,10 +138,9 @@ function Signup() {
                 <input
                   type={visible ? "text" : "password"}
                   name="conformPassword"
-                  autoComplete="current-password"
                   required
                   value={conformPassword}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setConformPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded shadow-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
                 {visible ? (
@@ -148,7 +168,7 @@ function Signup() {
                 <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
                   {avator ? (
                     <img
-                      src={URL.crateObjectUrl(avator)}
+                    src={URL.createObjectURL(avator)}
                       alt="avator"
                       className="h-full w-full object-cover rounded-full"
                     />
