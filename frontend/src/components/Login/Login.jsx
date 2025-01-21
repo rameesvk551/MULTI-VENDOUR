@@ -1,12 +1,33 @@
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/style";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { server } from "../../server";
+import axios from 'axios'
 function Login() {
+ 
+ const navigate=useNavigate()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
 
+
+  const handleOnSubmit=(e)=>{
+    e.preventDefault()
+    axios.post(`${server}/login`, {email, password }, {
+      headers: { "Content-Type": "application/json" }
+    })
+    .then((res)=>{
+      console.log("daaaaaaaata",res); 
+      if(res.data.success === true){
+        navigate("/")
+      }
+      console.log("daaaaaaaata",res);  
+    }).catch((err)=>{
+      console.log(err); 
+    })
+   
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -17,7 +38,7 @@ function Login() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleOnSubmit}>
             {/* Email Field */}
             <div>
               <label

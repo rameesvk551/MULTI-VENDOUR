@@ -15,9 +15,8 @@ function Signup() {
   const [avator, setAvator] = useState(null);
 
   const handleSubmit =async (e) => {
-e.preventDefault()
+   e.preventDefault()
     const config={headers:{"content-Type":"multipart/form-data"}}
-
     const newForm= new FormData()
     newForm.append("file",avator)
     newForm.append("name",name)
