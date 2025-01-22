@@ -5,6 +5,7 @@ import { RxAvatar } from "react-icons/rx";
 import styles from "../../styles/style";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { server } from '../../server';
+import { toast } from 'react-toastify';
 function Signup() {
   const navigate=useNavigate()
   const [email, setEmail] = useState("");
@@ -28,9 +29,16 @@ function Signup() {
       if(res.data.success === true){
         navigate("/")
       }
+      else if(res.data.userAlreadyExist === true){
+        alert(res.data.message)
+      }
+      
       console.log("daaaaaaaata",res);  
     }).catch((err)=>{
-      console.log(err); 
+      console.log(err);
+      
+      alert(err)
+     toast.error(err.response.message) 
     })
    
   };

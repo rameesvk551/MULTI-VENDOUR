@@ -21,7 +21,12 @@ function Login() {
       console.log("daaaaaaaata",res); 
       if(res.data.success === true){
         navigate("/")
+      }else if(res.data.notExistt === true){
+        alert(res.data.message)
+      }else if(res.data.passwordNotMatch === true){
+        alert("res.data.message ")
       }
+      
       console.log("daaaaaaaata",res);  
     }).catch((err)=>{
       console.log(err); 

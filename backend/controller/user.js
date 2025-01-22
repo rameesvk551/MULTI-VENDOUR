@@ -10,7 +10,7 @@ const sendMail = require("../utils/sendMail")
 const catchAsyncErrors = require("../middleware/catchAsyncErrors")
 const bcrypt=require("bcrypt")
 const sendToken = require("../utils/jwtToken")
-// uer register
+// user register
 router.post("/create-user",upload.single("file"), async (req,res,next)=>{
 try {
   const {name,email,password}=req.body
@@ -26,7 +26,7 @@ try {
         
       }
     })
-    return  next(new ErrorHandler("user already exist ",400))
+    return json({userAlreadyExist:true,message:"user already exist"})
   }
  console.log("user not existtts");
  
@@ -39,7 +39,7 @@ try {
       name:name,
       email:email,
       password:hashedPassword,
-      avator:fileUrl
+      avator:fileUrl | "avator.png"
   })
   console.log("new uer",newUser);
   
@@ -124,14 +124,17 @@ router.post("/login",async(req,res,next)=>{
  const  {email,password}=req.body
  try {
   const user= await User.findOne({email})
-const isPasswordCorrect = await bcrypt.compare(password,user.password)
+
 if(!user){
-  return console.log("user not exist")
+  console.log("no user found");
+  
+  return res.json({notExist:true,message:"user not exist"})
 }
+const isPasswordCorrect = await bcrypt.compare(password,user.password)
 if(!isPasswordCorrect){
-  return console.log("incorrect password")
+  return json({passwordNotMatch:true,message:"password not match"})
 }
-res.json({succes:true,user})
+res.json({succes:true,user,message:"user loged in successfully"})
   
  } catch (error) {
   return next(new ErrorHandler(error.message,400))
