@@ -19,7 +19,6 @@ var userSchema = new mongoose.Schema({
     },
     avator:{
       type:String,
-      required:true,
       default:"avator.png"
   },
 
