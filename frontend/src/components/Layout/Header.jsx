@@ -8,7 +8,9 @@ import {BiMenuAltLeft}   from 'react-icons/bi'
 import {CgProfile} from 'react-icons/cg'
 import DropDown from './DropDown'
 import Navbar from './Navbar'
+//import {useSelector} from 'react-redux'
 const Header = ({activeHeading}) => {
+  //  const {isAuthenticated,user,} = useSelector((state) => state.user)
     const [searchTerm,setSerchTerm]=useState("")
     const [searchData,setSerchData]=useState(null)
     const [active,setActive]=useState(false)
@@ -131,9 +133,22 @@ const Header = ({activeHeading}) => {
 
           <div className={`${styles.noramlFlex}`}>
             <div className="relative cursor-pointer mr-[15px]">
-                <CgProfile
-                size={30}
-                color='rgb(255 2555 255 / 83%)'/>
+
+
+{/*
+    isAuthenticated ? (
+        <Link to='/profile'>
+       {<img src={`${backend_url}${user.avatar}`} alt="" clasName=" w-[40px] h-[35px] rounded-full" />}
+        </Link>
+
+    ):(
+        <Link to='/login'>
+        <CgProfile  size={30} color='rgb(255 2555 255 / 83%)'/>
+        </Link>
+
+    )
+*/}
+            
                 
             </div>
 
