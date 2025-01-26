@@ -2,6 +2,12 @@ import { BrowserRouter, Route,Routes } from "react-router-dom";
 import "./App.css";
 import { ActivationPage, BestSellingPage, EventPage, HomePage, LoginPage, ProductPage, SignupPage, } from "./Routes";
 import { ToastContainer, toast } from 'react-toastify';
+import { useEffect } from "react";
+import axios from "axios";
+import { server } from "./server";
+import store from "./redux/store";
+import { loadUser } from "./redux/actions/user";
+import { useSelector } from "react-redux";
 //import { useSelector } from 'react-redux'
 
 
@@ -10,14 +16,20 @@ import { ToastContainer, toast } from 'react-toastify';
 
 
 const App = () => {
-  //const [loading]=useSelector((state)=>state.user)
+ useEffect(()=>{
+    store.dispatch(loadUser())
+  },[])
+  const {loading}=useSelector((state)=>state.user)
   return (
-  <>
+ 
+  
 
-  {/*loading ? (null) : (
-     
-  )*/}
 
+<>
+
+{ loading ? (
+  null ):(
+    
 <BrowserRouter>
      <Routes>
      <Route path="/" element={<HomePage/>}/>
@@ -30,7 +42,10 @@ const App = () => {
   
      </Routes>
      </BrowserRouter>
-  </>
+  )
+}
+</>
+
   );
 };
 

@@ -1,13 +1,18 @@
 //create token and aving to cookies
 
 const sendToken=(user,statusCode,res)=>{
+    console.log("Toooooooken",user,statusCode);
+    
     const token =user.getJwtToken()
-
+        console.log(token);
+        
     //options for cookies
-    const options={
-        expires:new Date(Date.now() + 90 +24 +60 + 1000),
-        httpOnly:true
-    }
+    const options = {
+        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      };
     res.status(statusCode).cookie("token",token,options).json({
         success:true,
         user,

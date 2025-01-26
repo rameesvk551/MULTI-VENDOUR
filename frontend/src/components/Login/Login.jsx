@@ -14,23 +14,21 @@ function Login() {
 
   const handleOnSubmit=(e)=>{
     e.preventDefault()
-    axios.post(`${server}/login`, {email, password }, {
-      headers: { "Content-Type": "application/json" }
-    })
-    .then((res)=>{
-      console.log("daaaaaaaata",res); 
-      if(res.data.success === true){
-        navigate("/")
-      }else if(res.data.notExistt === true){
-        alert(res.data.message)
-      }else if(res.data.passwordNotMatch === true){
-        alert("res.data.message ")
+    axios.post(`${server}/login-user`, 
+      { email, password },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true, // Ensures cookies or other credentials are sent with the request
       }
-      
-      console.log("daaaaaaaata",res);  
-    }).catch((err)=>{
-      console.log(err); 
+    )
+    .then(response => {
+      console.log("Login successful", response);
+       
     })
+    .catch(error => {
+      console.error("Login failed", error.response);
+    });
+    
    
   }
   return (

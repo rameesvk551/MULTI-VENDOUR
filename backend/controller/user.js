@@ -10,141 +10,147 @@ const sendMail = require("../utils/sendMail")
 const catchAsyncErrors = require("../middleware/catchAsyncErrors")
 const bcrypt=require("bcrypt")
 const sendToken = require("../utils/jwtToken")
-// user register
-router.post("/create-user",upload.single("file"), async (req,res,next)=>{
-try {
-  const {name,email,password}=req.body
-  const userEmail=await User.findOne({email})
- 
-  if (userEmail) {
-    const filename=req.file.filename
-    const filePath=`uploads/${filename}`
-    fs.unlink(filePath,(err)=>{
-      if(err){
-        console.log(err);
-        res.status(500).json({message:"Error deleting file"})
-        
-      }
-    })
-    return json({userAlreadyExist:true,message:"user already exist"})
-  }
- console.log("user not existtts");
- 
-  const hashedPassword= await bcrypt.hash(password,10)
-  const filename=req.file.filename || "avator"
-  const fileUrl=path.join(filename)
-
-
-  const  newUser= new User({
-      name:name,
-      email:email,
-      password:hashedPassword,
-      avator:fileUrl | "avator.png"
-  })
-  console.log("new uer",newUser);
-  
-     
-  const activationToken=createActivationToken(newUser.toObject())
-  console.log("activatin url creaing");
- 
-  const activationUrl=`http://localhost:3000/activation/${activationToken}`
- 
- 
+const { isAuthenticated } = require("../middleware/auth")
+const { log } = require("console")
+// create user
+router.post("/create-user", async (req, res, next) => {
   try {
-    await sendMail({
-      email:newUser.email,
-      subject:"activate your account",
-      message:`hallo ${newUser.name} please click on the link to activate your account :${activationUrl}`
-    })
+    const { name, email, password, avatar } = req.body;
+    const userEmail = await User.findOne({ email });
 
-    res.status(201).json({
-      success:true,
-      message:`please check your mail :- ${newUser.email} to activate your account`
-    })
-    
-  } catch (error) {
-    console.log("error in sending mail");
-    
-    return next(new ErrorHandler(error.message))
-  }
-  
+    if (userEmail) {
+      return next(new ErrorHandler("User already exists", 400));
+    }
 
-
-} catch (error) {
-
-  return next(new ErrorHandler(error.message,400))
-}
-
-
-})
-
-// create activation token 
-const createActivationToken = (payload) => {
-  try {
-    console.log("Creating JWT...");
-    return jwt.sign(payload, process.env.ACTIVATION_SECRET, {
-      expiresIn: "5m",
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      folder: "avatars",
     });
+
+    const user = {
+      name: name,
+      email: email,
+      password: password,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
+    };
+
+    const activationToken = createActivationToken(user);
+
+    const activationUrl = `https://eshop-tutorial-pyri.vercel.app/activation/${activationToken}`;
+
+    try {
+      await sendMail({
+        email: user.email,
+        subject: "Activate your account",
+        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+      });
+      res.status(201).json({
+        success: true,
+        message: `please check your email:- ${user.email} to activate your account!`,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
   } catch (error) {
-    console.error("Error creating activation token:", error);
-    throw new Error("Failed to generate activation token");
+    return next(new ErrorHandler(error.message, 400));
   }
+});
+
+// create activation token
+const createActivationToken = (user) => {
+  return jwt.sign(user, process.env.ACTIVATION_SECRET, {
+    expiresIn: "5m",
+  });
 };
 
+// activate user
+router.post(
+  "/activation",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { activation_token } = req.body;
 
+      const newUser = jwt.verify(
+        activation_token,
+        process.env.ACTIVATION_SECRET
+      );
 
-//activate user
-router.post("/activation",catchAsyncErrors(async(req,res,next)=>{
-  try {
-    console.log(req.body);
-    const {activationToken} =req.body
-    const user=jwt.verify(activationToken,process.env.ACTIVATION_SECRET)
-    if(!user){
-      return next(new ErrorHandler("invalid token",400))
+      if (!newUser) {
+        return next(new ErrorHandler("Invalid token", 400));
+      }
+      const { name, email, password, avatar } = newUser;
+
+      let user = await User.findOne({ email });
+
+      if (user) {
+        return next(new ErrorHandler("User already exists", 400));
+      }
+      user = await User.create({
+        name,
+        email,
+        avatar,
+        password,
+      });
+
+      sendToken(user, 201, res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
     }
-    const {name,email,password,avator}=user
-    const newUser=new User({
-      name,
-      email,
-      password,
-      avator
-    })
-   await  newUser.save()
-   sendToken(user,201,res)
+  })
+);
+
+// login user
+router.post(
+  "/login-user",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+   console.log("req.body" ,req.body);
+   
+      if (!email || !password) {
+        return next(new ErrorHandler("Please provide the all fields!", 400));
+      }
+
+      const user = await User.findOne({ email }).select("+password");
+     console.log("useeeeeeeeeer",user);
+     
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+
+      const isPasswordValid = await user.comparePassword(password);
+
+      if (!isPasswordValid) {
+        return next(
+          new ErrorHandler("Please provide the correct information", 400)
+        );
+      }
+  console.log("tokken sending");
+  
+      sendToken(user, 201, res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
+//load user
+router.get("/get-user",isAuthenticated,catchAsyncErrors(async(req,res,next) =>{
+  try {
+    const user=await User.findById(req.user.id)
+    console.log("authentivated",user);
+    
+    if(!user){
+      return next(new ErrorHandler("user doesn't exist",400))
+    }
+    res.status(200).json({success:true,user})
   } catch (error) {
     return next(new ErrorHandler(error.message,500))
   }
 }))
-
-
-//user login
-router.post("/login",async(req,res,next)=>{
-  
-  
- const  {email,password}=req.body
- try {
-  const user= await User.findOne({email})
-
-if(!user){
-  console.log("no user found");
-  
-  return res.json({notExist:true,message:"user not exist"})
-}
-const isPasswordCorrect = await bcrypt.compare(password,user.password)
-if(!isPasswordCorrect){
-  return json({passwordNotMatch:true,message:"password not match"})
-}
-res.json({succes:true,user,message:"user loged in successfully"})
-  
- } catch (error) {
-  return next(new ErrorHandler(error.message,400))
- }
-
-
-})
-
-
-
 
 
 

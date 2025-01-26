@@ -17,29 +17,28 @@ function Signup() {
 
   const handleSubmit =async (e) => {
    e.preventDefault()
-    const config={headers:{"content-Type":"multipart/form-data"}}
+
     const newForm= new FormData()
     newForm.append("file",avator)
     newForm.append("name",name)
     newForm.append("email",email)
     newForm.append("password",password)
     newForm.append("conformPassword",conformPassword)
-    axios.post(`${server}/create-user`,newForm,config)
-    .then((res)=>{
-      if(res.data.success === true){
-        navigate("/")
+    axios.post(
+      `${server}/create-user`,
+      newForm,
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true, // Include credentials
       }
-      else if(res.data.userAlreadyExist === true){
-        alert(res.data.message)
-      }
-      
-      console.log("daaaaaaaata",res);  
-    }).catch((err)=>{
-      console.log(err);
-      
-      alert(err)
-     toast.error(err.response.message) 
+    )
+    .then((res) => {
+      console.log("Response:", res);
     })
+    .catch((err) => {
+      console.error("Error:", err);
+    });
+    
    
   };
   const handleFileInputChange = (e) => {
