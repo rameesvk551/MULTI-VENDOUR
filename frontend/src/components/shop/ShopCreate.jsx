@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, } from "react-router-dom";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
@@ -9,6 +9,7 @@ import { RxAvatar } from "react-icons/rx";
 import styles from "../../styles/style";
 
 const ShopCreate = () => {
+  const navigate=useNavigate()
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState();
@@ -22,7 +23,7 @@ const ShopCreate = () => {
     e.preventDefault();
 
     axios
-      .post(`${server}/shop/create-shop`, {
+      .post(`${server}/create-shop`, {
         name,
         email,
         password,
@@ -30,9 +31,11 @@ const ShopCreate = () => {
         zipCode,
         address,
         phoneNumber,
-      })
+      },{withCredentials:true})
       .then((res) => {
+        console.log( "user creation response",res); 
         toast.success(res.data.message);
+        navigate("")
         setName("");
         setEmail("");
         setPassword("");
@@ -40,8 +43,10 @@ const ShopCreate = () => {
         setZipCode();
         setAddress("");
         setPhoneNumber();
+        navigate("/dashbord")
       })
       .catch((error) => {
+        console.log( "shop creation error",error);
         toast.error(error.response.data.message);
       });
   };

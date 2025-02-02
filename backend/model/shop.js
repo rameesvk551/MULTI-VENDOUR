@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require ("bcrypt")
 const jwt = require("jsonwebtoken");
 
 const shopSchema = new mongoose.Schema({
@@ -71,8 +71,7 @@ const shopSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  resetPasswordToken: String,
-  resetPasswordTime: Date,
+ 
 });
 
 // Hash password
@@ -85,11 +84,10 @@ shopSchema.pre("save", async function (next) {
 
 // jwt token
 shopSchema.methods.getJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+  return jwt.sign({ id: this._id}, process.env.JWT_SECRET_KEY,{
     expiresIn: process.env.JWT_EXPIRES,
   });
 };
 
 
-
-module.exports = mongoose.model("Shop", shopSchema);
+module.exports = mongoose.model("Shop",shopSchema);

@@ -60,7 +60,7 @@ const DashboardSideBar = ({ active }) => {
 
       <div className="w-full flex items-center p-4">
         <Link
-          to="/dashboard-create-product"
+          to="/dashbord-create-product"
           className="w-full flex items-center"
         >
           <AiOutlineFolderAdd
