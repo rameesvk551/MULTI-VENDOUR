@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom'
 import { productData } from '../static/data'
 import ProductCard from '../components/productCard/ProductCard'
 
-const ProductPage = () => {
+const ProductsPage = () => {
     const [searchParams]=useSearchParams()
     const categoryData=searchParams.get("category")
     console.log("vvvvvvvvvv",categoryData);
@@ -47,4 +47,4 @@ const ProductPage = () => {
   )
 }
 
-export default ProductPage
+export default ProductsPage

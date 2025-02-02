@@ -107,14 +107,13 @@ router.post(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
-   console.log("req.body" ,req.body);
    
       if (!email || !password) {
         return next(new ErrorHandler("Please provide the all fields!", 400));
       }
 
       const user = await User.findOne({ email }).select("+password");
-     console.log("useeeeeeeeeer",user);
+
      
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
@@ -127,7 +126,6 @@ router.post(
           new ErrorHandler("Please provide the correct information", 400)
         );
       }
-  console.log("tokken sending");
   
       sendToken(user, 201, res);
     } catch (error) {
@@ -141,7 +139,6 @@ router.post(
 router.get("/get-user",isAuthenticated,catchAsyncErrors(async(req,res,next) =>{
   try {
     const user=await User.findById(req.user.id)
-    console.log("authentivated",user);
     
     if(!user){
       return next(new ErrorHandler("user doesn't exist",400))
