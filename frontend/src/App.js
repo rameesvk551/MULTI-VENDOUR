@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./ROUTES/ProtectedRoutes";
 import { TbShoppingBagDiscount } from "react-icons/tb";
-import { ShopCreateProduct, ShopDashbordPage } from "./ROUTES/ShopRoutes";
+import { ShopAllProducts, ShopCreateProduct, ShopDashbordPage } from "./ROUTES/ShopRoutes";
 import SellerProtectedRoute from "./ROUTES/SellerProtectedRoute";
 
 //import { useSelector } from 'react-redux'
@@ -91,6 +91,18 @@ const App = () => {
                 
             
               }
+              
+            />
+
+<Route
+              path="/dashbord-products"
+              element={
+              
+                  <ShopAllProducts/>
+                
+            
+              }
+              
             />
           </Routes>
         </BrowserRouter>
