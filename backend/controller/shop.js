@@ -47,20 +47,66 @@ sendShopToken(seller,201,res)
     }
   }));
   
-  //load user
+
+
+  // login seller
+router.post(
+  "/login",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      console.log("req.bodyyyyyyyyyyyyy",req.body);
+   
+      if (!email || !password) {
+        return next(new ErrorHandler("Please provide the all fields!", 400));
+      }
+
+      const seller = await Shop.findOne({ email }).select("+password");
+          console.log("seller",seller);
+          
+     
+      if (!seller) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+   console.log("Stored hashed password:", seller.password); // Check if password exists
+
+console.log("password checking ", password, seller.password);
+
+const isPasswordValid = await seller.comparePassword(password);
+
+console.log("password checked"); // If this doesn't log, there's an error in comparePassword
+   
+      if (!isPasswordValid) {
+        console.log("password not matching  ")
+        return next(
+          new ErrorHandler("Please provide the correct information", 400)
+        );
+      }
+   console.log("ending token ");
+   
+      sendShopToken(seller, 201, res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+  //load seller
 router.get("/get-seller",isSeller,catchAsyncErrors(async(req,res,next) =>{
   try {
-    console.log("seller",req.seller);
     
     const seller=await Shop.findById(req.seller.id)
     
     if(!seller){
-      console.log("not seller");
+ 
       
       return next(new ErrorHandler("user doesn't exist",400))
     }
-    res.status(200).json({success:true,seller})
+    console.log("sssssssssss");
+    
+     return res.status(200).json({success:true,seller})
   } catch (error) {
+    console.log(error);
+    
     return next(new ErrorHandler(error.message,500))
   }
 }))

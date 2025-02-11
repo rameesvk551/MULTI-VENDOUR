@@ -3,11 +3,13 @@
 import axios from "axios";
 import { server } from "../../server";
 
-export const createProduct = (newForm) => async (dispach) => {
-  console.log("forrrrrrrrm daaaaata", newForm);
+export const createProduct = (newForm) => async (dispatch) => {
+  for (let pair of  newForm.entries()) {
+    console.log(pair[0], pair[1]);
+  }
 
   try {
-    dispach({
+    dispatch({
       type: "productCreateRequest",
     });
 
@@ -17,36 +19,58 @@ export const createProduct = (newForm) => async (dispach) => {
       },
       withCredentials: true,
     };
-    const { data } = axios.post(`${server}/create-product`, newForm, config);
-    dispach({
+    const { data } = await axios.post(`${server}/product/create-product`, newForm, config);
+    dispatch({
       type: "productCreateSuccess",
       payload: data.product,
     });
   } catch (error) {
-    dispach({
+    dispatch({
       type: "productCreateFail",
       payload: error.response.data.message,
     });
   }
 };
 
-export const getAllProductsOfShop = (id) => async (dispach) => {
+// get All Products of a shop
+export const getAllProductsShop = (id) => async (dispatch) => {
   try {
-    dispach({
-      type: "getAllProductOfShopRequest",
+    dispatch({
+      type: "getAllProductsShopRequest",
     });
 
-    const { data } = axios.get(`${server}/get-all-product-of-shop/${id}`, {
-      withCredentials: true,
-    });
-    dispach({
-      type: "getAllProductOfShopSuccess",
+    const { data } = await axios.get(
+      `${server}/product/get-all-product-of-shop/${id}`
+    );
+    dispatch({
+      type: "getAllProductsShopSuccess",
       payload: data.products,
     });
   } catch (error) {
-    dispach({
-      type: "getAllProductOfShopFail",
+    dispatch({
+      type: "getAllProductsShopFailed",
       payload: error.response.data.message,
     });
   }
 };
+
+
+//delete product of a hop
+export const deleteProduct=(id)=>async(dispatch)=>{
+  try {
+    dispatch({
+      type:"deleteProductRequiest"
+    })
+    const data= await axios.delete(`${server}/product/delete-shop-product/${id}`)
+    dispatch({
+      type:"deleteProductSuccess",
+      payload:data.message
+    })
+  } catch (error) {
+    dispatch({
+      type:"deleteProductFail",
+      payload:error.response.data.mesage
+    })
+    
+  }
+}

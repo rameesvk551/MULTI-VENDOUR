@@ -10,9 +10,8 @@ export const loadUser = () => async (dispatch) => {
       type: "LoadUserRequest",
     });
 
-    const { data } = await axios.get(`${server}/get-user`, {withCredentials:true});
-        // Debugging: Log the response data
-    console.log("LoadUser Response Data:", data);
+    const { data } = await axios.get(`${server}/user/get-user`, {withCredentials:true});
+
     dispatch({
       type: "LoadUserSuccess",
       payload: data.user,
@@ -33,9 +32,7 @@ export const loadSeller = () => async (dispatch) => {
       type: "LoadSellerRequest",
     });
 
-    const { data } = await axios.get(`${server}/get-seller`, {withCredentials:true});
-        // Debugging: Log the response data
-    console.log("LoadSeller Response Data:", data);
+    const { data } = await axios.get(`${server}/shop/get-seller`, {withCredentials:true});
     dispatch({
       type: "LoadSellerSuccess",
       payload: data.seller,

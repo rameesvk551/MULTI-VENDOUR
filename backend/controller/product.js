@@ -12,45 +12,56 @@ const Product = require("../model/product");
 
 router.post(
   "/create-product",
+  isSeller,
   upload.array("images"),
   catchAsyncErrors(async (req, res, next) => {
-try {
-  const shopId = req.seller._id;
-  console.log("shopID", shopId);
+    try {
+      console.log("entered");
+      
+      // ✅ Ensure seller is attached
+      const shopId = req.seller?._id;
+      if (!shopId) {
+        return res.status(404).json({ success: false, message: "Seller not found!" });
+      }
+      console.log("shopID", shopId);
 
-  console.log("prrroduct,", req.body);
+      console.log("Received product data:", req.body);
 
-  const shop = await Shop.findById(shopId);
-  if (!shop) {
-    return console.log("no seller exist ");
-  }
+      
+      const shop = await Shop.findById(shopId);
+      if (!shop) {
+        return res.status(404).json({ success: false, message: "No seller exists" });
+      }
 
-  const files = req.files;
-  const imageUrl = files.map((file) => `${file.filename}`);
-  const productData = req.body;
-  productData.image = imageUrl;
-  productData.shop = shop;
+   
+      const files = req.files;
+      const imageUrl = files.map((file) => file.filename);
 
-  const newProduct = await new Product(productData);
-  await newProduct.save();
-  const product = newProduct;
-  res.status(201).json({
-    success: true,
-    product,
-  });
-} catch (error) {
-  console.log("error is",error);
-  
-  
-}
+    
+      const productData = { ...req.body, image: imageUrl, shop: shopId };
+
+      const newProduct = new Product(productData);
+      await newProduct.save();
+
+      res.status(201).json({
+        success: true,
+        product: newProduct,
+      });
+
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
   })
 );
 
 //get all product of a shop
-router.get("get-all-products-shop/:id",catchAsyncErrors,(async(req,res,next)=>{
+router.get("/get-all-product-of-shop/:id",catchAsyncErrors,(async(req,res,next)=>{
   try {
+    console.log(":iddddddddddddd",req.params.id);
+    
     const products= await Product.find({shopId:req.params.id})
-    res.status(201).json({
+    return  res.status(201).json({
       success:true,
       products
     })

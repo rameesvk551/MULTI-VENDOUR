@@ -12,30 +12,36 @@ import {
   ShopCreatePage,
   ShopActivationPage,
 } from "./ROUTES/Routes";
-import { ToastContainer, toast } from "react-toastify";
 import { useEffect } from "react";
-import axios from "axios";
-import { server } from "./server";
-import store from "./redux/store";
 import { loadSeller, loadUser } from "./redux/actions/user";
 import { useDispatch, useSelector } from "react-redux";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./ROUTES/ProtectedRoutes";
-import { TbShoppingBagDiscount } from "react-icons/tb";
-import { ShopAllProducts, ShopCreateProduct, ShopDashbordPage } from "./ROUTES/ShopRoutes";
+import {
+  ShopAllCoupouns,
+  ShopAllEvents,
+  ShopAllProducts,
+  ShopCreateEvents,
+  ShopCreateProduct,
+  ShopDashbordPage,
+  ShopLoginPage,
+} from "./ROUTES/ShopRoutes";
 import SellerProtectedRoute from "./ROUTES/SellerProtectedRoute";
 
 //import { useSelector } from 'react-redux'
 
 const App = () => {
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(loadUser());  
     dispatch(loadSeller());
+    dispatch(loadSeller());
+    dispatch(loadUser());
   }, [dispatch]);
+
   const { loading, isAuthenticated } = useSelector((state) => state.user);
-  // chech isseller and also destructure seller from tore and if seller navigate to seller profile
+  const { isLoading, seller, isSeller } = useSelector((state) => state.seller);
+
   return (
     <>
       {loading ? null : (
@@ -56,6 +62,7 @@ const App = () => {
             <Route path="/product/:name" element={<ProductDetailsPage />} />
             <Route path="/best-selling" element={<BestSellingPage />} />
             <Route path="/events" element={<EventPage />} />
+            <Route path="/shop" element={<EventPage />} />
             <Route
               path="/profile"
               element={
@@ -74,36 +81,54 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+
             <Route path="/shop-create" element={<ShopCreatePage />} />
+            <Route path="/shop-login" element={<ShopLoginPage />} />
             <Route
-              path="/dashbord"
+              path="/dashboard"
               element={
-              
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  {""}
                   <ShopDashbordPage />
-              
+                </SellerProtectedRoute>
               }
             />
-              <Route
+            <Route
               path="/dashbord-create-product"
               element={
-              
-                  <ShopCreateProduct/>
-                
-            
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  <ShopCreateProduct />
+                </SellerProtectedRoute>
               }
-              
+            />
+
+            <Route
+              path="/dashboard-create-event"
+              element={
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  <ShopCreateEvents />
+                </SellerProtectedRoute>
+              }
+            />
+                <Route
+              path="/dashboard-events"
+              element={
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  <ShopAllEvents/>
+                </SellerProtectedRoute>
+              }
             />
 
 <Route
-              path="/dashbord-products"
+              path="/dashboard-coupouns"
               element={
-              
-                  <ShopAllProducts/>
-                
-            
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  <ShopAllCoupouns/>
+                </SellerProtectedRoute>
               }
-              
             />
+
+            <Route path="/dashboard-products" element={<ShopAllProducts />} />
           </Routes>
         </BrowserRouter>
       )}

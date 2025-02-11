@@ -89,5 +89,9 @@ shopSchema.methods.getJwtToken = function () {
   });
 };
 
+// compare password
+shopSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 module.exports = mongoose.model("Shop",shopSchema);

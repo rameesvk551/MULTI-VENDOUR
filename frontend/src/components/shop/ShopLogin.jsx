@@ -1,10 +1,10 @@
 import { React, useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../../styles/styles";
 import { Link, useNavigate } from "react-router-dom";
+import styles from "../../styles/style";
 import axios from "axios";
 import { server } from "../../server";
-import { toast } from "react-toastify";
+
 
 const ShopLogin = () => {
   const navigate = useNavigate();
@@ -13,6 +13,26 @@ const ShopLogin = () => {
   const [visible, setVisible] = useState(false);
 
   const handleSubmit = async (e) => {
+    e.preventDefault()
+    axios.post(`${server}/shop/login`, 
+      { email, password },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    )
+    .then(response => {
+      console.log("Login successful", response);
+      navigate("/dashboard")
+      window.location.reload(true);
+       
+    })
+    .catch(error => {
+      console.error("Login failed", error.response);
+    });
+    
+   
+
   
  
   };

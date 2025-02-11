@@ -23,7 +23,7 @@ const ShopCreate = () => {
     e.preventDefault();
 
     axios
-      .post(`${server}/create-shop`, {
+      .post(`${server}/shop/create-shop`, {
         name,
         email,
         password,
@@ -43,7 +43,7 @@ const ShopCreate = () => {
         setZipCode();
         setAddress("");
         setPhoneNumber();
-        navigate("/dashbord")
+        navigate("/dashboard")
       })
       .catch((error) => {
         console.log( "shop creation error",error);

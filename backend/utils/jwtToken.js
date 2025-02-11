@@ -24,7 +24,7 @@ const sendShopToken=(seller,statusCode,res)=>{
     
    try {
     const token =seller.getJwtToken()
-    console.log("tokkken",token);
+   
     
 //options for cookies
 const options = {
