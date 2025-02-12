@@ -7,13 +7,13 @@ const shop = require("../model/shop");
 exports.isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   console.log("reqqqqqqqqqqqqq", req.cookies);
 
-  const { token } = req.cookies;
+  const { userToken } = req.cookies;
 
-  if (!token) {
+  if (!userToken) {
     return next(new ErrorHandler("Please login to continue", 401));
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const decoded = jwt.verify(userToken, process.env.JWT_SECRET_KEY);
 
   req.user = await User.findById(decoded.id);
 

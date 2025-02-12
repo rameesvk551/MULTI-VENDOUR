@@ -2,29 +2,40 @@
 
 
 
-const sendToken=(user,statusCode,res)=>{ 
+const sendUserToken=(user,statusCode,res)=>{ 
+    console.log(user,statusCode);
+    
+   try {
     const token =user.getJwtToken()
-        
-    //options for cookies
-    const options = {
-        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      };
-    res.status(statusCode).cookie("token",token,options).json({
-        success:true,
-        user,
-        token,
-    })
+    console.log("tokkbbrgrfrken",token);
+    
+//options for cookies
+const options = {
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  };
+  console.log("options setted");
+  
+res.status(statusCode).cookie("userToken",token,options).json({
+    success:true,
+    user,
+    token,
+})
+   } catch (error) {
+    console.log("error",error);
+    
+   }
 
 }
+
 const sendShopToken=(seller,statusCode,res)=>{ 
     console.log(seller,statusCode);
     
    try {
     const token =seller.getJwtToken()
-   
+    console.log("tokkbbrgrfrken",token);
     
 //options for cookies
 const options = {
@@ -47,4 +58,4 @@ res.status(statusCode).cookie("sellerToken",token,options).json({
 
 }
 
-module.exports={sendToken,sendShopToken}
+module.exports={sendShopToken,sendUserToken}

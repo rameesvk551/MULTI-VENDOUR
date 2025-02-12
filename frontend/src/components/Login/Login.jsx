@@ -14,7 +14,7 @@ function Login() {
 
   const handleOnSubmit=(e)=>{
     e.preventDefault()
-    axios.post(`${server}/login-user`, 
+    axios.post(`${server}/user/login-user`, 
       { email, password },
       {
         headers: { "Content-Type": "application/json" },

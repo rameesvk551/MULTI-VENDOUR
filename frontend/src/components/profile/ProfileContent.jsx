@@ -12,24 +12,30 @@ import { Link } from "react-router-dom";
 import { MdTrackChanges } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
 import { useEffect } from "react";
+import {Country,State,city} from "country-state-city"
 import styles from "../../styles/style";
+import { addAddress, deleteAddress, updateUserInfo } from "../../redux/actions/user";
 
 
 
-const ProfileContent = ({ active }) => {
+const ProfileContent = ({ active }) =>  {
   const { user } = useSelector((state) => state.user);
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
-
+  const dispatch=useDispatch()
 
   useEffect(() => {
     
   }, []);
 
   const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(name,email,phoneNumber,password)
+   dispatch(updateUserInfo(name,email,phoneNumber,password))
+
 
   };
 
@@ -502,29 +508,10 @@ const AllOrders = () => {
     const [address1, setAddress1] = useState("");
     const [address2, setAddress2] = useState("");
     const [addressType, setAddressType] = useState("");
-  
-    // Dummy user data with addresses
-    const user = {
-      addresses: [
-        {
-          addressType: "Home",
-          address1: "123 Main Street",
-          address2: "Apartment 4B",
-          city: "New York",
-          country: "USA",
-          zipCode: "10001",
-        },
-        {
-          addressType: "Office",
-          address1: "456 Corporate Blvd",
-          address2: "Suite 12",
-          city: "San Francisco",
-          country: "USA",
-          zipCode: "94105",
-        },
-      ],
-      phoneNumber: "+1 123-456-7890",
-    };
+    const dispatch=useDispatch()
+    const { loading, isAuthenticated,user } = useSelector((state) => state.user);
+   
+   
   
     const addressTypeData = [
       { name: "Default" },
@@ -534,11 +521,39 @@ const AllOrders = () => {
   
     const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log("Form submitted");
+     
+    if (addressType === "" || country === "" || city === "") {
+      //toast.error("Please fill all the fields!");
+    } else {
+      dispatch(
+       addAddress(
+          country,
+          city,
+          address1,
+          address2,
+          zipCode,
+          addressType
+        )
+      );
+      setOpen(false);
+      setCountry("");
+      setCity("");
+      setAddress1("");
+      setAddress2("");
+      setZipCode(null);
+      setAddressType("");
+    }
+      
+     
     };
   
-    const handleDelete = (address) => {
-      console.log("Delete address:", address);
+    const handleCountryChange = (e) => {
+      setCountry(e.target.value);
+    };
+    const handleDelete = (item) => {
+      console.log("Delete address:",item._id);
+        dispatch(deleteAddress(item._id))
+     
     };
   
     return (
@@ -559,32 +574,37 @@ const AllOrders = () => {
               <div className="w-full">
                 <form aria-required onSubmit={handleSubmit} className="w-full">
                   <div className="w-full block p-4">
-                    <div className="w-full pb-2">
-                      <label className="block pb-2">Country</label>
-                      <select
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        className="w-[95%] border h-[40px] rounded-[5px]"
-                      >
-                        <option value="" className="block border pb-2">
-                          Choose your country
-                        </option>
-                        {/* Add options dynamically if needed */}
-                      </select>
-                    </div>
-                    {/* City */}
-                    <div className="w-full pb-2">
-                      <label className="block pb-2">City</label>
-                      <select
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="w-[95%] border h-[40px] rounded-[5px]"
-                      >
-                        <option value="" className="block border pb-2">
-                          Choose your city
-                        </option>
-                      </select>
-                    </div>
+                  <div className="w-full pb-2">
+  <label className="block pb-2">Country</label>
+  <select onChange={handleCountryChange} className="w-[95%] border h-[40px] rounded-[5px]">
+    <option value="">Choose a country</option>
+    {Country.getAllCountries().map((item) => (
+      <option key={item.isoCode} value={item.isoCode}>
+        {item.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+{/* City Dropdown */}
+<div className="w-full pb-2">
+  <label className="block pb-2">State</label>
+  <select
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+    className="w-[95%] border h-[40px] rounded-[5px]"
+    disabled={!country}  // Prevent selection until country is chosen
+  >
+    <option value="">Choose your state</option>
+    {country &&
+      State.getStatesOfCountry(country).map((item) => (
+        <option key={item.isoCode} value={item.isoCode}>
+          {item.name}
+        </option>
+      ))}
+  </select>
+</div>
+
                     {/* Address Inputs */}
                     <div className="w-full pb-2">
                       <label className="block pb-2">Address 1</label>

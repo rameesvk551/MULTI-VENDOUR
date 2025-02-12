@@ -35,6 +35,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(loadSeller());
+    dispatch(loadUser());
     dispatch(loadSeller());
     dispatch(loadUser());
   }, [dispatch]);
@@ -66,7 +67,7 @@ const App = () => {
             <Route
               path="/profile"
               element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <ProtectedRoute isAuthenticated={isAuthenticated}isLoading={loading}>
                   {" "}
                   <ProfilePage />
                 </ProtectedRoute>

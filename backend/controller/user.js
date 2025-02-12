@@ -15,91 +15,36 @@ const { log } = require("console")
 // create user
 router.post("/create-user", async (req, res, next) => {
   try {
-    const { name, email, password, avatar } = req.body;
+    console.log(req.body);
+    const { name, email, password, } = req.body;
+  
+    
     const userEmail = await User.findOne({ email });
 
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-      folder: "avatars",
-    });
+     const newUser = new User({ name, email, password });
+await newUser.save();
+const user = await User.findById(newUser._id).select("+password");
 
-    const user = {
-      name: name,
-      email: email,
-      password: password,
-      avatar: {
-        public_id: myCloud.public_id,
-        url: myCloud.secure_url,
-      },
-    };
+sendToken.sendUserToken(user,200,res)
 
-    const activationToken = createActivationToken(user);
 
-    const activationUrl = `https:localhost:4000/activation/${activationToken}`;
 
-    try {
-      await sendMail({
-        email: user.email,
-        subject: "Activate your account",
-        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-      });
-      res.status(201).json({
-        success: true,
-        message: `please check your email:- ${user.email} to activate your account!`,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
+ 
+    
+   
+     
+
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
 });
 
-// create activation token
-const createActivationToken = (user) => {
-  return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
-  });
-};
 
-// activate user
-router.post(
-  "/activation",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const { activation_token } = req.body;
 
-      const newUser = jwt.verify(
-        activation_token,
-        process.env.ACTIVATION_SECRET
-      );
-
-      if (!newUser) {
-        return next(new ErrorHandler("Invalid token", 400));
-      }
-      const { name, email, password, avatar } = newUser;
-
-      let user = await User.findOne({ email });
-
-      if (user) {
-        return next(new ErrorHandler("User already exists", 400));
-      }
-      user = await User.create({
-        name,
-        email,
-        avatar,
-        password,
-      });
-
-      sendToken(user, 201, res);
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
 
 // login user
 router.post(
@@ -107,27 +52,24 @@ router.post(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
+   console.log(req.body);
    
       if (!email || !password) {
         return next(new ErrorHandler("Please provide the all fields!", 400));
       }
 
       const user = await User.findOne({ email }).select("+password");
-
+      console.log(" user",user)
      
       if (!user) {
+        console.log("no user");
+        
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
 
-      const isPasswordValid = await user.comparePassword(password);
-
-      if (!isPasswordValid) {
-        return next(
-          new ErrorHandler("Please provide the correct information", 400)
-        );
-      }
-  
-      sendToken(user, 201, res);
+      console.log("sending cokie",user);
+      
+      sendToken.sendUserToken(user,200,res)
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -150,6 +92,89 @@ router.get("/get-user",isAuthenticated,catchAsyncErrors(async(req,res,next) =>{
 }))
 
 
+//update user 
+router.put("/update-user-info",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
+   const {password,email,name,phoneNumber}=req.body
+  const user=await User.findById({_id:req.user.id})
+  if(!user){
+    return next(new ErrorHandler("User not found", 404));
+    
+  }else{
+    const isPasswordValid = await user.comparePassword(password);
+
+    if(!isPasswordValid){
+      return next(new ErrorHandler("Invalid password", 401))
+      
+    }else{
+
+      if(email) user.email=email
+      if(name) user.email=email
+      if(phoneNumber) user.phoneNumber=phoneNumber
+      await user.save()
+      res.status(200).json({success:true,message:"updated successfully"})
+    }
+
+  }
+
+}))
+
+router.post("/add-address",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
+  try {
+    console.log("reqqqqqqqqqqqqasrt address",req.body);
+    
+    const user =await User.findById(req.user.id)
+    const {country,city,addres1,address2,zipCode,addressType}=req.body
+    if(!user){
+      return next(new ErrorHandler("User not found", 404));
+      
+    }else{
+      const isDuplicate=user.addresses.some((adrs)=>
+       adrs.country === country &&
+      adrs.city === city &&
+      adrs.address1===addres1 &&
+      adrs.address2 === address2 &&
+      adrs.zipCode === zipCode &&
+      adrs.addressType ===addressType
+    )
+
+    if (isDuplicate){
+      return next(new ErrorHandler("This address already exists", 400));
+    }
+
+    user.addresses.push({country,city,addres1,address2,zipCode,addressType})
+    await user.save()
+    console.log("ssssssaved");
+    
+    res.status(201).json({
+      success: true,
+      message: "Address added successfully",
+      addresses: user.addresses,
+      user
+    });
+
+    }
+
+  } catch (error) {
+    
+  }
+}))
+
+
+
+router.delete("delete-address/:addressId",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
+const {addressId}=req.params.id
+if (!addressId) {
+  return res.status(400).json({ message: "Address ID is required" });
+}
+  const user =await User.findById(req.user.id)
+
+  user.addresses = user.addresses.filter((addr) => addr._id.toString() !== addressId);
+  await user.save();
+
+  res.status(200).json({ message: "Address deleted successfully", addresses: user.addresses })
+  
+
+}))
 
 
 module.exports = router

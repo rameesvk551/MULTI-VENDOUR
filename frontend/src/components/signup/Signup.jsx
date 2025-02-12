@@ -25,7 +25,7 @@ function Signup() {
     newForm.append("password",password)
     newForm.append("conformPassword",conformPassword)
     axios.post(
-      `${server}/create-user`,
+      `${server}/user/create-user`,
       newForm,
       {
         headers: { "Content-Type": "application/json" },
