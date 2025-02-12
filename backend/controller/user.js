@@ -161,17 +161,26 @@ router.post("/add-address",isAuthenticated,catchAsyncErrors(async(req,res,next)=
 
 
 
-router.delete("delete-address/:addressId",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
-const {addressId}=req.params.id
+router.delete("/delete-address/:addressId",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
+  console.log("deleeeeeeting");
+  
+const {addressId}=req.params
 if (!addressId) {
   return res.status(400).json({ message: "Address ID is required" });
 }
   const user =await User.findById(req.user.id)
+  if(!user){
+    return next(new ErrorHandler("User not found", 404));
+    
+  }else{
+    user.addresses = user.addresses.filter((addr) => addr._id.toString() !== addressId);
+    await user.save();
+     console.log("address deleted successfully");
+     
+    res.status(200).json({ message: "Address deleted successfully", addresses: user.addresses })
+  }
 
-  user.addresses = user.addresses.filter((addr) => addr._id.toString() !== addressId);
-  await user.save();
 
-  res.status(200).json({ message: "Address deleted successfully", addresses: user.addresses })
   
 
 }))
