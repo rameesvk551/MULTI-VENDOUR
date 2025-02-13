@@ -150,15 +150,15 @@ const App = () => {
                 </SellerProtectedRoute>
               }
             />
-
-<Route
+{/**<Route
               path="/dashboard-messages"
               element={
                 <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
                   <ShopInboxPage/>
                 </SellerProtectedRoute>
               }
-            />
+            /> */}
+
             <Route path="/dashboard-products" element={<ShopAllProducts />} />
           </Routes>
         </BrowserRouter>

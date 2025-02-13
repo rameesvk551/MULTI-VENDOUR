@@ -36,3 +36,5 @@ res.status(200).json({
         return next(new ErrorHandler(error.response.message)) 
     }
 }))
+
+module.exports=router
