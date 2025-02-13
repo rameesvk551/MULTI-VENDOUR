@@ -11,6 +11,8 @@ import {
   SignupPage,
   ShopCreatePage,
   ShopActivationPage,
+  ShopHomePage,
+  CheckoutPage,
 } from "./ROUTES/Routes";
 import { useEffect } from "react";
 import { loadSeller, loadUser } from "./redux/actions/user";
@@ -24,9 +26,12 @@ import {
   ShopCreateEvents,
   ShopCreateProduct,
   ShopDashbordPage,
+  ShopInboxPage,
   ShopLoginPage,
+  ShopSettingsPage,
 } from "./ROUTES/ShopRoutes";
 import SellerProtectedRoute from "./ROUTES/SellerProtectedRoute";
+import { getAllEvents } from "./redux/actions/event";
 
 //import { useSelector } from 'react-redux'
 
@@ -35,6 +40,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(loadSeller());
+    dispatch(getAllEvents());
     dispatch(loadUser());
     dispatch(loadSeller());
     dispatch(loadUser());
@@ -78,7 +84,7 @@ const App = () => {
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
                   {" "}
-                  <ProfilePage />
+                  <CheckoutPage />
                 </ProtectedRoute>
               }
             />
@@ -94,6 +100,14 @@ const App = () => {
                 </SellerProtectedRoute>
               }
             />
+               <Route
+          path="/shop/:id"
+          element={
+            <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+              <ShopHomePage />
+            </SellerProtectedRoute>
+          }
+        />
             <Route
               path="/dashbord-create-product"
               element={
@@ -128,7 +142,23 @@ const App = () => {
                 </SellerProtectedRoute>
               }
             />
+            <Route
+              path="/settings"
+              element={
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  <ShopSettingsPage/>
+                </SellerProtectedRoute>
+              }
+            />
 
+<Route
+              path="/dashboard-messages"
+              element={
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  <ShopInboxPage/>
+                </SellerProtectedRoute>
+              }
+            />
             <Route path="/dashboard-products" element={<ShopAllProducts />} />
           </Routes>
         </BrowserRouter>

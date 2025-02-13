@@ -23,6 +23,15 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please enter your product price!"],
   },
+  trview:[
+    {
+      type:String
+    }
+  ],
+  rating:{
+    type:Number
+  },
+
   stock: {
     type: Number,
     required: [true, "Please enter your product stock!"],

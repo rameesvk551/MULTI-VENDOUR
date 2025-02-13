@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import {Country,State,city} from "country-state-city"
 import styles from "../../styles/style";
 import { addAddress, deleteAddress, updateUserInfo } from "../../redux/actions/user";
+import axios from "axios";
 
 
 
@@ -153,7 +154,7 @@ const ProfileContent = ({ active }) =>  {
       {/* Change Password */}
       {active === 6 && (
         <div>
-      {/** <ChangePassword /> */}   
+      <ChangePassword />    
         </div>
       )}
 
@@ -711,7 +712,7 @@ const AllOrders = () => {
     );
   };
   
-{/*
+
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -727,13 +728,13 @@ const ChangePassword = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success(res.data.success);
+       // toast.success(res.data.success);
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+       // toast.error(error.response.data.message);
       });
   };
   return (
@@ -789,5 +790,5 @@ const ChangePassword = () => {
   );
 };
 
-*/}
+
 export default ProfileContent;

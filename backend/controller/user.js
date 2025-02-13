@@ -13,36 +13,43 @@ const sendToken = require("../utils/jwtToken")
 const { isAuthenticated } = require("../middleware/auth")
 const { log } = require("console")
 // create user
-router.post("/create-user", async (req, res, next) => {
+router.post("/create-user", upload.single("uploads"), async (req, res, next) => {
   try {
     console.log(req.body);
-    const { name, email, password, } = req.body;
-  
-    
-    const userEmail = await User.findOne({ email });
+    console.log(req.file); // Logs file details
 
+    const { name, email, password } = req.body;
+    
+    // Check if user already exists
+    const userEmail = await User.findOne({ email });
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-     const newUser = new User({ name, email, password });
-await newUser.save();
-const user = await User.findById(newUser._id).select("+password");
 
-sendToken.sendUserToken(user,200,res)
+    // Get uploaded file path
+    const filePath = req.file ? req.file.path : null;
 
+    // Create new user with file path
+    const newUser = new User({ 
+      name, 
+      email, 
+      password, 
+      avatar: filePath, // Save file path in database
+    });
 
+    await newUser.save();
 
- 
-    
-   
-     
+    // Fetch the user including password (if needed)
+    const user = await User.findById(newUser._id).select("+password");
+
+    // Send token response
+    sendToken.sendUserToken(user, 200, res);
 
   } catch (error) {
-    return next(new ErrorHandler(error.message, 400));
+    return next(new ErrorHandler(error.message, 500));
   }
 });
-
 
 
 
@@ -91,36 +98,93 @@ router.get("/get-user",isAuthenticated,catchAsyncErrors(async(req,res,next) =>{
   }
 }))
 
-
-//update user 
-router.put("/update-user-info",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
-   const {password,email,name,phoneNumber}=req.body
-  const user=await User.findById({_id:req.user.id})
-  if(!user){
-    return next(new ErrorHandler("User not found", 404));
-    
-  }else{
-    const isPasswordValid = await user.comparePassword(password);
-
-    if(!isPasswordValid){
-      return next(new ErrorHandler("Invalid password", 401))
-      
-    }else{
-
-      if(email) user.email=email
-      if(name) user.email=email
-      if(phoneNumber) user.phoneNumber=phoneNumber
-      await user.save()
-      res.status(200).json({success:true,message:"updated successfully"})
+//update user passord 
+router.put("/update-user-password",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
+  try {
+    console.log("updating pasword",req.body);
+    const {oldPassword,newPassword,confirmPassword}=req.body
+    const user = await User.findById(req.user.id).select("+password");
+ 
+    console.log("User found:", user);
+  
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+  
+    if (!oldPassword) {
+      return next(new ErrorHandler("Password is required", 400));
+    }
+    if ( newPassword !== confirmPassword) {
+      return next(new ErrorHandler("Password not matching", 400));
+    }
+  
+    console.log("Checking password...");
+    const isPasswordValid = await user.comparePassword(oldPassword);
+    console.log("Password checked:", isPasswordValid);
+  
+    if (!isPasswordValid) {
+      return next(new ErrorHandler("Invalid password", 401));
     }
 
+    user.password = newPassword
+    await user.save()
+     console.log("new password aved");
+     res.status(200).json({
+      success:true,message:"Password updated successfully"
+     })
+     
+  } catch (error) {
+    return next(new ErrorHandler("internal server error", 500));
   }
-
 }))
 
+
+
+
+
+
+//update user 
+router.put("/update-user-info", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
+  console.log("Updating user info:", req.body);
+
+  const { password, email, name, phoneNumber } = req.body;
+
+
+  const user = await User.findById(req.user.id).select("+password");
+
+  console.log("User found:", user);
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  if (!password) {
+    return next(new ErrorHandler("Password is required", 400));
+  }
+
+  console.log("Checking password...");
+  const isPasswordValid = await user.comparePassword(password);
+  console.log("Password checked:", isPasswordValid);
+
+  if (!isPasswordValid) {
+    return next(new ErrorHandler("Invalid password", 401));
+  }
+
+  // Update user fields if provided
+  if (email) user.email = email;
+  if (name) user.name = name;  // Fixed incorrect assignment
+  if (phoneNumber) user.phoneNumber = phoneNumber;
+
+  await user.save();
+
+  res.status(200).json({ success: true, message: "Updated successfully", user });
+}));
+
+
+//add address
 router.post("/add-address",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
   try {
-    console.log("reqqqqqqqqqqqqasrt address",req.body);
+
     
     const user =await User.findById(req.user.id)
     const {country,city,addres1,address2,zipCode,addressType}=req.body
@@ -162,7 +226,7 @@ router.post("/add-address",isAuthenticated,catchAsyncErrors(async(req,res,next)=
 
 
 router.delete("/delete-address/:addressId",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
-  console.log("deleeeeeeting");
+
   
 const {addressId}=req.params
 if (!addressId) {

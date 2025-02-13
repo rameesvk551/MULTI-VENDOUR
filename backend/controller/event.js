@@ -68,4 +68,23 @@ router.delete("/delete-shop-event/:id",catchAsyncErrors(async(req,res,next)=>{
   return   res.status(200).json({success:true,message:"event deleted successfully"})
 
 }))
+
+//get all events
+
+router.get("/get-all-events",catchAsyncErrors(async(req,res,next)=>{
+ try {
+  const allEvents=await  Event.find() 
+  console.log("UUUUUUUUUUUUUUU",allEvents);
+  
+if (!allEvents.length) {
+  return res.status(404).json({ success: false, message: "No events found " });
+}
+ console.log("finded events");
+ 
+res.status(200).json({ success: true, count: allEvents.length, allEvents});
+ } catch (error) {
+  
+ }
+
+}))
 module.exports = router;

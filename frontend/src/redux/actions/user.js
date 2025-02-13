@@ -54,7 +54,7 @@ export const updateUserInfo =
         type: "UpdateUserInfoRequest",
       });
 
-      const { data } = await axios.get(
+      const { data } = await axios.put(
         `${server}/user/update-user-info`,
         { name, email, phoneNumber, password },
         { withCredentials: true }

@@ -7,29 +7,48 @@ import {
 } from "react-icons/ai";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/style";
+import { useSelector } from "react-redux";
+import { server } from "../../server";
+import axios from "axios";
 
 const ProductDetails = ({ data }) => {
-
- // const { products } = useSelector((state) => state.products);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
- const [select, setSelect] = useState(0);
-const navigate=useNavigate()
+  const [select, setSelect] = useState(0);
+  const navigate = useNavigate();
 
-const incrementCount = () => {
-  setCount(count + 1);
-};
+  const incrementCount = () => {
+    setCount(count + 1);
+  };
 
-const decrementCount = () => {
-  if (count > 1) {
-    setCount(count - 1);
-  }
-};
+  const decrementCount = () => {
+    if (count > 1) {
+      setCount(count - 1);
+    }
+  };
 
-const handleMessageSubmit=()=>{
-  navigate("/inbox?conversation")
-}
-
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      await axios
+        .post(`${server}/converation/create-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/conversation/${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+        });
+    } else {
+      alert("please login");
+    }
+  };
 
   return (
     <div className="bg-white">
@@ -44,27 +63,27 @@ const handleMessageSubmit=()=>{
                   className="w-[80%]"
                 />
                 <div className="w-full flex">
-                <div
-      className={`${select === 0 ? "border" : ""} cursor-pointer`}
-    >
-      <img
-        src={data?.image_Url[0].url} // Access image URL directly from the mapped item
-        alt=""
-        className="h-[200px] overflow-hidden mr-3 mt-3"
-        onClick={() => setSelect(0)}
-      />
-    </div>
-    <div
-      className={`${select === 1 ? "border" : ""} cursor-pointer`}
-    >
-      <img
-        src={data?.image_Url[1].url} // Access image URL directly from the mapped item
-        alt=""
-        className="h-[200px] overflow-hidden mr-3 mt-3"
-        onClick={() => setSelect(1)}
-      />
-    </div>
-  
+                  <div
+                    className={`${select === 0 ? "border" : ""} cursor-pointer`}
+                  >
+                    <img
+                      src={data?.image_Url[0].url} // Access image URL directly from the mapped item
+                      alt=""
+                      className="h-[200px] overflow-hidden mr-3 mt-3"
+                      onClick={() => setSelect(0)}
+                    />
+                  </div>
+                  <div
+                    className={`${select === 1 ? "border" : ""} cursor-pointer`}
+                  >
+                    <img
+                      src={data?.image_Url[1].url} // Access image URL directly from the mapped item
+                      alt=""
+                      className="h-[200px] overflow-hidden mr-3 mt-3"
+                      onClick={() => setSelect(1)}
+                    />
+                  </div>
+
                   <div
                     className={`${
                       select === 1 ? "border" : "null"
@@ -73,7 +92,6 @@ const handleMessageSubmit=()=>{
                 </div>
               </div>
 
-    
               <div className="w-full 800px:w-[50%] pt-5">
                 <h1 className={`${styles.productTitle}`}>{data.name}</h1>
                 <p>{data.description}</p>
@@ -99,8 +117,6 @@ const handleMessageSubmit=()=>{
                     </span>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                     
-                     
                       onClick={incrementCount}
                     >
                       +
@@ -110,7 +126,7 @@ const handleMessageSubmit=()=>{
                     {click ? (
                       <AiFillHeart
                         size={30}
-                        className="cursor-pointer"                  
+                        className="cursor-pointer"
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -118,7 +134,6 @@ const handleMessageSubmit=()=>{
                       <AiOutlineHeart
                         size={30}
                         className="cursor-pointer"
-                     
                         color={click ? "red" : "#333"}
                         title="Add to wishlist"
                       />
@@ -127,7 +142,6 @@ const handleMessageSubmit=()=>{
                 </div>
                 <div
                   className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-               
                 >
                   <span className="text-white flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />
@@ -143,17 +157,15 @@ const handleMessageSubmit=()=>{
                   </Link>
                   <div className="pr-8">
                     <Link to={`/shop/preview/${data?.shop._id}`}>
-                      <h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                       
-                      </h3>
+                      <h3 className={`${styles.shop_name} pb-1 pt-1`}></h3>
                     </Link>
                     <h5 className="pb-3 text-[15px]">
-                     ({data.shop.ratings})Ratings
+                      ({data.shop.ratings})Ratings
                     </h5>
                   </div>
                   <div
                     className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
-                   // onClick={handleMessageSubmit}
+                    // onClick={handleMessageSubmit}
                   >
                     <span className="text-white flex items-center">
                       Send Message <AiOutlineMessage className="ml-1" />
@@ -161,24 +173,20 @@ const handleMessageSubmit=()=>{
                   </div>
                 </div>
               </div>
-             
-
             </div>
           </div>
-         
+
           <br />
           <br />
 
-        <ProductDetailsInfo data={data}/>
+          <ProductDetailsInfo data={data} />
         </div>
       ) : null}
     </div>
   );
 };
 
-const ProductDetailsInfo = ({
-  data
-}) => {
+const ProductDetailsInfo = ({ data }) => {
   const [active, setActive] = useState(1);
 
   return (
@@ -228,30 +236,35 @@ const ProductDetailsInfo = ({
         <>
           <p className="py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv
+            modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
             daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
+            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
+            9JTG3R02KFLD G3R-F2E
           </p>
         </>
       ) : null}
 
       {active === 2 ? (
-   
         <div className="w-full justify-center min-h-[40vh]-flex items-center">
           <p>no review yet</p>
-
         </div>
       ) : null}
 
@@ -273,30 +286,24 @@ const ProductDetailsInfo = ({
                 </div>
               </div>
             </Link>
-            <p className="pt-2">egtro
+            <p className="pt-2">
+              egtro [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]egtro
               [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]egtro
               [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]egtro
               [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]egtro
-              [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]egtro
-              [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]  
+              [DKVAMWTRHJ895YUUUUUUUUUUUUUUUUUUURRJMBG0IFDWQD['[A']]
             </p>
           </div>
           <div className="w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end">
             <div className="text-left">
               <h5 className="font-[600]">
-                Joined on:{" "}
-                <span className="font-[500]">
-                  29-12-2024                </span>
+                Joined on: <span className="font-[500]">29-12-2024 </span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Products:{" "}
-                <span className="font-[500]">
-                 543
-                </span>
+                Total Products: <span className="font-[500]">543</span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Reviews:{" "}
-                <span className="font-[500]">556</span>
+                Total Reviews: <span className="font-[500]">556</span>
               </h5>
               <Link to="/">
                 <div

@@ -77,6 +77,7 @@ userSchema.methods.getJwtToken = function () {
 };
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
+  if (!this.password) throw new Error("Password not found in database.");
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
