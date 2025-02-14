@@ -32,26 +32,34 @@ import {
 } from "./ROUTES/ShopRoutes";
 import SellerProtectedRoute from "./ROUTES/SellerProtectedRoute";
 import { getAllEvents } from "./redux/actions/event";
+import { getAllProducts, getAllProductsShop } from "./redux/actions/product";
+import Loader from "./components/Layout/Loader";
 
 //import { useSelector } from 'react-redux'
 
 const App = () => {
   const dispatch = useDispatch();
-
+  const { loading, isAuthenticated } = useSelector((state) => state.user);
+  const { allProducts } = useSelector((state) => state.products);
+  const { isLoading, seller, isSeller } = useSelector((state) => state.seller);
   useEffect(() => {
+    dispatch(getAllProducts());
     dispatch(loadSeller());
     dispatch(getAllEvents());
     dispatch(loadUser());
-    dispatch(loadSeller());
-    dispatch(loadUser());
   }, [dispatch]);
+  
+  useEffect(() => {
+    if (seller && seller._id) {
+      dispatch(getAllProductsShop(seller._id));
+    }
+  }, [dispatch, seller]);
 
-  const { loading, isAuthenticated } = useSelector((state) => state.user);
-  const { isLoading, seller, isSeller } = useSelector((state) => state.seller);
-
+ console.log("dddddddddataaaaaaa",allProducts);
+ 
   return (
     <>
-      {loading ? null : (
+      {loading ? <Loader/> : (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />

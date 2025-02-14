@@ -52,7 +52,7 @@ const ShopSettings = () => {
 
     await axios
       .put(
-        `${server}/shop/update-seller-info`,
+        `${server}/shop/update-shop-info`,
         {
           name,
           address,
@@ -67,7 +67,7 @@ const ShopSettings = () => {
         dispatch(loadSeller());
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+        //toast.error(error.response.data.message);
       });
   };
 

@@ -20,6 +20,11 @@ const shopSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  avatar:{
+    type: String,
+    default: "avator.png",
+   
+ },
   address: {
     type: String,
     required: true,

@@ -12,7 +12,7 @@ const { isSeller } = require("../middleware/auth")
 
 
 // create shop
-router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
+router.post("/create-shop", upload.single("images"), catchAsyncErrors(async (req, res, next) => {
     try {
       const { email } = req.body;
       console.log("req.body...",req.body);
@@ -24,7 +24,10 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("User already exists", 400));
       }
   
-      
+       // Get uploaded file path
+    const filePath = req.file ? req.file.path.replace(/\\/g, "/") : null;
+
+    console.log("creatting");
   
       const newSeller =await  new Shop({
         name: req.body.name,
@@ -33,6 +36,8 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
         address: req.body.address,
         phoneNumber: req.body.phoneNumber,
         zipCode: req.body.zipCode,
+        avatar: filePath,
+
       });
       console.log("newSeller",newSeller);
       
@@ -90,6 +95,24 @@ console.log("password checked"); // If this doesn't log, there's an error in com
     }
   })
 );
+
+// logout seller
+
+router.delete("/logout",isSeller, catchAsyncErrors(async (req, res, next) => {
+  try {
+  
+    
+    res.clearCookie("sellerToken", {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production", // Set secure to true in production
+      sameSite: "strict"
+    });
+
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+}));
   //load seller
 router.get("/get-seller",isSeller,catchAsyncErrors(async(req,res,next) =>{
   try {
@@ -110,5 +133,41 @@ router.get("/get-seller",isSeller,catchAsyncErrors(async(req,res,next) =>{
     return next(new ErrorHandler(error.message,500))
   }
 }))
+
+// update shopinfo
+router.put("/update-shop-info", isSeller, catchAsyncErrors(async (req, res, next) => {
+ try {
+  console.log("Updating seller info:", req.body);
+
+  const { name,
+    address,
+    zipCode,
+    phoneNumber,
+    description, } = req.body;
+
+
+  const seller = await Shop.findById(req.seller.id)
+
+  console.log("shop found:",seller);
+
+  if (!seller) {
+    return next(new ErrorHandler("shop not found", 404));
+  }
+
+  if (name) seller.name = name;
+  if (address) seller.address =address; 
+  if (description) seller.description = description;
+  if (zipCode) seller.zipCode =zipCode; 
+  if (phoneNumber) seller.phoneNumber = phoneNumber;
+
+  await seller.save();
+
+  res.status(200).json({ success: true, message: "Updated successfully", seller});
+ } catch (error) {
+  console.log(error);
+  next(error); 
+  
+ }
+}));
 
   module.exports = router

@@ -36,19 +36,19 @@ export const createProduct = (newForm) => async (dispatch) => {
 export const getAllProductsShop = (id) => async (dispatch) => {
   try {
     dispatch({
-      type: "getAllProductsShopRequest",
+      type: "getAllProductsOfShopRequest",
     });
 
     const { data } = await axios.get(
       `${server}/product/get-all-product-of-shop/${id}`
     );
     dispatch({
-      type: "getAllProductsShopSuccess",
+      type: "getAllProductsOfShopSuccess",
       payload: data.products,
     });
   } catch (error) {
     dispatch({
-      type: "getAllProductsShopFailed",
+      type: "getAllProductsOfShopFail",
       payload: error.response.data.message,
     });
   }
@@ -74,3 +74,25 @@ export const deleteProduct=(id)=>async(dispatch)=>{
     
   }
 }
+
+
+export const getAllProducts = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: "getAllProductsRequest",
+    });
+
+    const { data } = await axios.get(
+      `${server}/product/get-all-products`
+    );
+    dispatch({
+      type: "getAllProductsSuccess",
+      payload: data.allProducts,
+    });
+  } catch (error) {
+    dispatch({
+      type: "getAllProductsFail",
+      payload: error.response.data.message,
+    });
+  }
+};

@@ -19,19 +19,15 @@ function Signup() {
    e.preventDefault()
 
     const newForm= new FormData()
-    newForm.append("file",avator)
+    newForm.append("images", avator);
     newForm.append("name",name)
     newForm.append("email",email)
     newForm.append("password",password)
     newForm.append("conformPassword",conformPassword)
-    axios.post(
-      `${server}/user/create-user`,
-      newForm,
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true, // Include credentials
-      }
-    )
+    axios.post(`${server}/user/create-user`, newForm, {
+      headers: { "Content-Type": "multipart/form-data" }, // Or just remove this line
+      withCredentials: true,
+    })
     .then((res) => {
       console.log("Response:", res);
     })

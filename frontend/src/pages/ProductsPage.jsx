@@ -1,50 +1,49 @@
-import React, { useEffect, useState } from 'react'
-import Header from '../components/Layout/Header'
-import styles from '../styles/style'
-import { useSearchParams } from 'react-router-dom'
-import { productData } from '../static/data'
-import ProductCard from '../components/productCard/ProductCard'
+import React, { useEffect, useState } from 'react';
+import Header from '../components/Layout/Header';
+import styles from '../styles/style';
+import { useSearchParams } from 'react-router-dom';
+import ProductCard from '../components/productCard/ProductCard';
+import { useSelector } from 'react-redux';
 
 const ProductsPage = () => {
-    const [searchParams]=useSearchParams()
-    const categoryData=searchParams.get("category")
-    console.log("vvvvvvvvvv",categoryData);
+    const [searchParams] = useSearchParams();
+    const categoryData = searchParams.get("category");
     
-    const [data,setData] =useState([])
+    console.log("Selected Category:", categoryData);
 
-    useEffect(()=>{
-        if(categoryData === null){
-            const d=productData && productData.sort((a,b) => a.total_sell - b.total_sell)
-            setData(d)
-        }else{
-            const d=productData && productData.filter((i) => i.category === categoryData)
-            setData(d)
+    const { allProducts, isProductsLoading } = useSelector((state) => state.products);
+    const [data, setData] = useState([]);
+console.log("pppppppprodddddd555555ddddddd",allProducts);
+console.log("pppppppprod11115555ddddddd",data);
+
+    useEffect(() => {
+        if (!allProducts || allProducts.length === 0) return;  
+
+        if (categoryData === null) {
+            const d = [...allProducts].sort((a, b) => a.total_sell - b.total_sell);
+            setData(d);
+        } else {
+            const d = allProducts.filter((i) => i.category === categoryData);
+            setData(d);
         }
-       // Windows.scrollTo(0,0)
-    },[])
-  return (
-    <div>
-      <Header activeHeading={3}/>
-      <br />
-      <br />
-      <div className={`${styles.section}`}>
-        <div className="grid grid-cols-1 gap-[20px] md:grid-col-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-col-5 xl:gap-[30px] mb-12">
-{
+    }, [allProducts, categoryData]);
 
-    data && data.map((i,index)=> <ProductCard key={index} data={i}/>)
-}
-
-
+    return (
+        <div>
+            <Header activeHeading={3} />
+            <br />
+            <br />
+            <div className={`${styles.section}`}>
+                <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
+                    {Array.isArray(data) && data.length > 0 ? (
+                        data.map((i, index) => <ProductCard key={index} data={i} />)
+                    ) : (
+                        <h1 className='text-center w-full pb-[110px] text-[20px]'> No products found</h1>
+                    )}
+                </div>
+            </div>
         </div>
-        {
-    data && data.length === 0 ? (
-        <h1 className='text-center w-full pb-[110px] text-[20px]'> No products found</h1>
-    ): null
-}
+    );
+};
 
-      </div>
-    </div>
-  )
-}
-
-export default ProductsPage
+export default ProductsPage;

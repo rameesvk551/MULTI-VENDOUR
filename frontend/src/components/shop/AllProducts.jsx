@@ -21,7 +21,7 @@ const AllProducts = () => {
     if (!isLoading && seller?._id) {
       console.log("Dispatching getAllProductsOfShop for seller:", seller._id);
       dispatch(getAllProductsShop(seller._id));
-      console.log("products are",products);
+      console.log("products are",products,isProductLoading);
       
     }
   }, [dispatch, seller, isLoading]);

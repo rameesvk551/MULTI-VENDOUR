@@ -18,8 +18,14 @@ import { toast } from "react-toastify";
 const ProfileSidebar = ({ setActive, active }) => {
   const navigate = useNavigate();
   const logoutHandler = () => {
+
+    axios.delete(`${server}/user/logout`,{withCredentials:true}).then((res)=>{
+      navigate("/", { replace: true });
+    }).catch((err)=>{
+     alert("an error occured")
+    })
     
-    console.log();
+  
     
   };
   return (

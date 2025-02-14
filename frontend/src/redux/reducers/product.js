@@ -2,6 +2,7 @@ import { createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
   isLoading: false,
+  isProductLoading :false,
   products: [],
   product: null,
   error: null,
@@ -29,14 +30,14 @@ export const productReducer = createReducer(initialState, (builder) => {
 
     // Get All Products of a Shop
     .addCase("getAllProductsOfShopRequest", (state) => {
-      state.isLoading = true;
+      state.isProductLoading  = true;
     })
     .addCase("getAllProductsOfShopSuccess", (state, action) => {
-      state.isLoading = false;
+      state.isProductLoading  = false;
       state.products = action.payload;
     })
     .addCase("getAllProductsOfShopFail", (state, action) => {
-      state.isLoading = false;
+      state.isProductLoading  = false;
       state.error = action.payload;
     })
 

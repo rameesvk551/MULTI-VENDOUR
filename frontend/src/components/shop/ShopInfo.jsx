@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { server } from "../../server";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { backend_url, server } from "../../server";
 import Loader from "../Layout/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../../styles/style";
@@ -14,18 +14,24 @@ const ShopInfo = ({ isOwner }) => {
   const [isLoading,setIsLoading] = useState(false);
   const {id} = useParams();
   const dispatch = useDispatch();
- 
+ const navigate=useNavigate()
   
 
   const logoutHandler = async () => {
+    axios.delete(`${server}/shop/logout`,{withCredentials:true}).then((res)=>{
+      navigate("/", { replace: true });
+    }).catch((err)=>{
+      alert("an eerror occured")
+    })
    
   };
 
-  const totalReviewsLength =
-  products && 
-  products.reduce((acc, product) => acc + product.reviews.length, 0);
-  const totalRatings = products && products.reduce((acc,product) => acc + product.reviews.reduce((sum,review) => sum + review.rating, 0),0);
-  const averageRating = totalRatings / totalReviewsLength || 0;
+
+  //const totalReviewsLength =5
+  //products && 
+  //products.reduce((acc, product) => acc + product.reviews.length, 0);
+  //const totalRatings = products && products.reduce((acc,product) => acc + product.reviews.reduce((sum,review) => sum + review.rating, 0),0);
+  //const averageRating = totalRatings / totalReviewsLength || 0;
 
   return (
    <>
@@ -37,7 +43,7 @@ const ShopInfo = ({ isOwner }) => {
       <div className="w-full py-5">
         <div className="w-full flex item-center justify-center">
           <img
-            src={`avator`}
+            src={`${backend_url}${seller.avatar}`}
             alt=""
             className="w-[150px] h-[150px] object-cover rounded-full"
           />

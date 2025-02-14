@@ -40,10 +40,28 @@ const ProfileContent = ({ active }) =>  {
 
   };
 
-  const handleImage = async (e) => {
-    
+  const handleImageUpdate = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append("image", file); //
+  
+    try {
+      const response = await axios.put(`${server}/user/update-avatar`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+  
+      if (response.data.success) {
+        alert("Profile image updated successfully!");
+      
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
-
+  
   return (
     <div className="w-full">
       {/* profile */}
@@ -52,7 +70,7 @@ const ProfileContent = ({ active }) =>  {
           <div className="flex justify-center w-full">
             <div className="relative">
               <img
-                src={``}
+                src={`${backend_url}${user.avatar}`}
                 className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
                 alt=""
               />
@@ -61,7 +79,7 @@ const ProfileContent = ({ active }) =>  {
                   type="file"
                   id="image"
                   className="hidden"
-                  onChange={handleImage}
+                  onChange={handleImageUpdate}
                 />
                 <label htmlFor="image">
                   <AiOutlineCamera />

@@ -53,9 +53,9 @@ router.post(
       res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
   })
-);
+)
 
-router.get("/get-all-product-of-shop/:id", catchAsyncErrors, async (req, res, next) => {
+router.get("/get-all-product-of-shop/:id", catchAsyncErrors( async (req, res, next) => {
   try {
     console.log(" Shop ID:", req.params.id); 
     const products = await Product.find({ shopId: req.params.id });
@@ -70,7 +70,22 @@ router.get("/get-all-product-of-shop/:id", catchAsyncErrors, async (req, res, ne
     console.error(" Error in Route:", error);  
     return next(new ErrorHandler(error, 400));
   }
-});
+}));
+
+
+router.get("/get-all-products",catchAsyncErrors(async(req,res,next)=>{
+  try {
+    const allProducts=await Product.find()
+  return res.status(200).json({
+    success: true,
+    allProducts,
+  });
+  } catch (error) {
+    return next(new ErrorHandler(error, 400));
+    
+  }
+
+}))
 
 
 module.exports = router;

@@ -12,31 +12,37 @@ const bcrypt=require("bcrypt")
 const sendToken = require("../utils/jwtToken")
 const { isAuthenticated } = require("../middleware/auth")
 const { log } = require("console")
+const { loadavg } = require("os")
 // create user
-router.post("/create-user", upload.single("uploads"), async (req, res, next) => {
+router.post("/create-user", upload.single("images"), async (req, res, next) => {
   try {
-    console.log(req.body);
-    console.log(req.file); // Logs file details
+ 
 
     const { name, email, password } = req.body;
     
     // Check if user already exists
     const userEmail = await User.findOne({ email });
     if (userEmail) {
+      console.log("aalready");
       return next(new ErrorHandler("User already exists", 400));
+     
+      
     }
 
 
-    // Get uploaded file path
-    const filePath = req.file ? req.file.path : null;
 
-    // Create new user with file path
+    const filePath = req.file ? req.file.path.replace(/\\/g, "/") : null;
+
+       console.log("creatting");
+       
+  
     const newUser = new User({ 
       name, 
       email, 
       password, 
-      avatar: filePath, // Save file path in database
+      avatar: filePath,
     });
+console.log("new user saved");
 
     await newUser.save();
 
@@ -82,6 +88,23 @@ router.post(
     }
   })
 );
+
+//logout user
+router.delete("/logout", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
+  try {
+    console.log("lllllog outuuing");
+    
+    res.clearCookie("userToken", {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production", // Set secure to true in production
+      sameSite: "strict"
+    });
+
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+}));
 
 
 //load user
@@ -179,6 +202,30 @@ router.put("/update-user-info", isAuthenticated, catchAsyncErrors(async (req, re
 
   res.status(200).json({ success: true, message: "Updated successfully", user });
 }));
+
+
+//update avatar
+router.put("/update-avatar",isAuthenticated, upload.single("image"), async (req, res, next) => {
+  try {
+    console.log("uuuuuuser updaaaating");
+    
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    const filePath = req.file.path.replace(/\\/g, "/"); 
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { avatar: filePath },
+      { new: true }
+    );
+
+    res.status(200).json({ success: true, avatar: updatedUser.avatar });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 500));
+  }
+});
 
 
 //add address
