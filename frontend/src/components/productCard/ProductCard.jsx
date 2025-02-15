@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import styles from '../../styles/style'
 import { AiFillHeart, AiFillStar, AiOutlineEye, AiOutlineHdd, AiOutlineHeart, AiOutlineShoppingCart, AiOutlineStar } from 'react-icons/ai'
 import ProductDetailsCard from '../productDetailsCard/ProductDetailsCard'
+import { useSelector } from 'react-redux'
 
 const ProductCard = ({data}) => {
+    const {cart}=useSelector((state)=> state.cart)
 const[click,setClick]=useState(false)
 const[open,setOpen]=useState(false)
     const d=data.name
@@ -23,7 +25,7 @@ className='w-full h-[170px] object-contain' />
 <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
 </Link>
 
-<Link to={`/product/${product_name}`}>
+<Link to={`/product/${data._id}`}>
 <h4 className='pb-3 font-[500]'>
     {data.name.length >40 ? data.name.slice(0,40) + "..." : data.name}
 </h4>

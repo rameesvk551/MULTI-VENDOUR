@@ -5,30 +5,14 @@ import { HiOutlineMinus, HiPlus } from "react-icons/hi";
 
 import { Link } from "react-router-dom";
 import styles from "../../styles/style";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const Cart = ({ setOpenCart }) => {
 
-    const cartData=[
-        {
-            name:"Iphone 13 pro max 256 gb ssd and 8 gb ram silvor color",
-            dicription:"hg35bvre",
-            price:2400,
-        },
-        {
-            name:"Iphone 14 pro max 256 gb ssd and 8 gb ram silvor color",
-            dicription:"hg35bvre",
-            price:2200,
-        },
-        {
-            name:"Iphone 16 pro max 256 gb ssd and 8 gb ram silvor color",
-            dicription:"hg35bvre",
-            price:2400,
-        }
-
-    ]
- // const { cart } = useSelector((state) => state.cart);
-  //const dispatch = useDispatch();
+ 
+  const { cart } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   //const removeFromCartHandler = (data) => {
  //   dispatch(removeFromCart(data));
@@ -79,7 +63,7 @@ const Cart = ({ setOpenCart }) => {
               <br />
               <div className="w-full border-t">
                 {
-                    cartData && cartData.map((i,index)=>(
+                    cart && cart.map((i,index)=>(
                         <CartSingle key={index} data={i}/>
                     ))
                 }

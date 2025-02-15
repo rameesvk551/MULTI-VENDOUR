@@ -31,7 +31,7 @@ export const createEvent = (eventData) => async (dispatch) => {
   };
   
 
-
+ // get all events of a shop
 export const getAllEventsOfShop = (id) => async (dispatch) => {
     try {
       dispatch({
@@ -52,6 +52,8 @@ export const getAllEventsOfShop = (id) => async (dispatch) => {
       });
     }
   };
+
+//get all events 
   export const getAllEvents = () => async (dispatch) => {
     try {
       dispatch({
@@ -76,7 +78,7 @@ export const getAllEventsOfShop = (id) => async (dispatch) => {
   };
   
   
-  //delete event of a shop
+//delete event of a shop
   export const deleteEvent=(id)=>async(dispatch)=>{
     try {
       dispatch({

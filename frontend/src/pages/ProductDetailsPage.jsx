@@ -5,18 +5,19 @@ import { productData } from '../static/data';
 import Footer from '../components/Layout/Footer';
 import Header from '../components/Layout/Header';
 import SuggestedProduct from '../components/products/SuggestedProduct';
+import { useSelector } from 'react-redux';
 
 const ProductDetailsPage = () => {
-  const {name}=useParams()
-  const productName=name.replace(/-/g," ")
-
-  
+  const { allProducts, isProductsLoading } = useSelector((state) => state.products);
+  const {id}=useParams()
   const [data,setData]=useState(null)
-  useEffect(()=>{
-    const data =productData.find((i)=> i.name === productName)
-    setData(data)
-    console.log("dataaaaaaaa",data);
-  },[])
+  useEffect(() => {
+   
+      const product = allProducts.find((i) => i._id === id );
+      setData(product);
+      console.log("da","idddddddd",id ,product);
+    
+  }, []);
  
   
     return (

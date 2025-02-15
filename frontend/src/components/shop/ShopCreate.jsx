@@ -19,49 +19,51 @@ const ShopCreate = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
 
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatar(file); // Set the selected file in state
+    }
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("image", avatar); // Append image file
+    formData.append("zipCode", zipCode);
+    formData.append("address", address);
+    formData.append("phoneNumber", phoneNumber);
+  
     axios
-      .post(`${server}/shop/create-shop`, {
-        name,
-        email,
-        password,
-        avatar,
-        zipCode,
-        address,
-        phoneNumber,
-      },{withCredentials:true})
+      .post(`${server}/shop/create-shop`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }, // Ensure file upload
+        withCredentials: true,
+      })
       .then((res) => {
-        console.log( "user creation response",res); 
+        console.log("User creation response", res);
         toast.success(res.data.message);
-        navigate("")
+        navigate("/dashboard");
         setName("");
         setEmail("");
         setPassword("");
-        setAvatar();
-        setZipCode();
+        setAvatar(null); // Reset file input
+        setZipCode("");
         setAddress("");
-        setPhoneNumber();
-        navigate("/dashboard")
+        setPhoneNumber("");
       })
       .catch((error) => {
-        console.log( "shop creation error",error);
-        toast.error(error.response.data.message);
+        console.log("Shop creation error", error);
+        toast.error(error.response?.data?.message || "Something went wrong");
       });
   };
+  
 
-  const handleFileInputChange = (e) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatar(reader.result);
-      }
-    };
-
-    reader.readAsDataURL(e.target.files[0]);
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

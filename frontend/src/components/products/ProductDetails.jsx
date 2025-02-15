@@ -7,11 +7,16 @@ import {
 } from "react-icons/ai";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/style";
-import { useSelector } from "react-redux";
-import { server } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
+import { backend_url, server } from "../../server";
 import axios from "axios";
+import { addToCart } from "../../redux/actions/cart";
 
 const ProductDetails = ({ data }) => {
+  console.log("dddddddddddataaaaaaaa in compo ",data);
+  
+  const dispatch =useDispatch()
+  const {cart} = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
@@ -27,6 +32,23 @@ const ProductDetails = ({ data }) => {
       setCount(count - 1);
     }
   };
+
+  const addToCartHandler=(id)=>{
+
+    const isItemExist =cart && cart.find((i) => i._id === id)
+    if(isItemExist){
+      alert("item alread exist in cart")
+    }else{
+        if(data.stock < count){
+       alert("product stock limited")
+        }else{
+          const cartData={...data,qty:count}
+          dispatch(addToCart(cartData))
+          alert("addded to cart uccessfully ")
+        }
+    }
+
+  }
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -58,7 +80,7 @@ const ProductDetails = ({ data }) => {
             <div className="block w-full 800px:flex">
               <div className="w-full 800px:w-[50%]">
                 <img
-                  src={`${data.image_Url[select].url}`}
+                  src={`${backend_url}${data.image}`}
                   alt=""
                   className="w-[80%]"
                 />
@@ -67,7 +89,7 @@ const ProductDetails = ({ data }) => {
                     className={`${select === 0 ? "border" : ""} cursor-pointer`}
                   >
                     <img
-                      src={data?.image_Url[0].url} // Access image URL directly from the mapped item
+                      src={`${backend_url}${data.image}`} 
                       alt=""
                       className="h-[200px] overflow-hidden mr-3 mt-3"
                       onClick={() => setSelect(0)}
@@ -77,7 +99,7 @@ const ProductDetails = ({ data }) => {
                     className={`${select === 1 ? "border" : ""} cursor-pointer`}
                   >
                     <img
-                      src={data?.image_Url[1].url} // Access image URL directly from the mapped item
+                      src={`${backend_url}${data.image}`} 
                       alt=""
                       className="h-[200px] overflow-hidden mr-3 mt-3"
                       onClick={() => setSelect(1)}
@@ -142,6 +164,7 @@ const ProductDetails = ({ data }) => {
                 </div>
                 <div
                   className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                  onClick={()=>addToCartHandler(data._id)}
                 >
                   <span className="text-white flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />
@@ -150,7 +173,7 @@ const ProductDetails = ({ data }) => {
                 <div className="flex items-center pt-8">
                   <Link to={`/shop/preview/${data?.shop._id}`}>
                     <img
-                      src={`${data.shop.shop_avatar.url}`}
+                      src={``}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
@@ -160,7 +183,7 @@ const ProductDetails = ({ data }) => {
                       <h3 className={`${styles.shop_name} pb-1 pt-1`}></h3>
                     </Link>
                     <h5 className="pb-3 text-[15px]">
-                      ({data.shop.ratings})Ratings
+                     15 Ratings
                     </h5>
                   </div>
                   <div
@@ -235,36 +258,14 @@ const ProductDetailsInfo = ({ data }) => {
       {active === 1 ? (
         <>
           <p className="py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv
-            modQJMC0WWDVRG059HU4JN 9JTG3R02KFLD G3R-F2E
-            daihvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvhvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            vdijo9 mo9999-vvvvvvvvvvvvvvvvvvvv modQJMC0WWDVRG059HU4JN
-            9JTG3R02KFLD G3R-F2E
+           {data?.description}
           </p>
         </>
       ) : null}
 
       {active === 2 ? (
         <div className="w-full justify-center min-h-[40vh]-flex items-center">
-          <p>no review yet</p>
+          <p>{data?.reviews}</p>
         </div>
       ) : null}
 
