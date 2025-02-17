@@ -11,17 +11,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { backend_url, server } from "../../server";
 import axios from "axios";
 import { addToCart } from "../../redux/actions/cart";
+import { addToWishlist, removeFromWishlist } from "../../redux/actions/wishlist";
+import { getAllProductsShop } from "../../redux/actions/product";
 
 const ProductDetails = ({ data }) => {
   console.log("dddddddddddataaaaaaaa in compo ",data);
   
   const dispatch =useDispatch()
   const {cart} = useSelector((state) => state.cart);
+  const {wishlist} = useSelector((state) => state.wishlist);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
+  useEffect(() => {
+    dispatch(getAllProductsShop(data && data?.shop._id));
+    if (wishlist && wishlist.find((i) => i._id === data?._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [data, wishlist]);
 
   const incrementCount = () => {
     setCount(count + 1);
@@ -49,6 +60,16 @@ const ProductDetails = ({ data }) => {
     }
 
   }
+  const addToWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
+
+  const removeFromWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  };
+
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -89,7 +110,7 @@ const ProductDetails = ({ data }) => {
                     className={`${select === 0 ? "border" : ""} cursor-pointer`}
                   >
                     <img
-                      src={`${backend_url}${data.image}`} 
+                      src={`${data.images}`} 
                       alt=""
                       className="h-[200px] overflow-hidden mr-3 mt-3"
                       onClick={() => setSelect(0)}
@@ -151,6 +172,7 @@ const ProductDetails = ({ data }) => {
                         className="cursor-pointer"
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
+                        onClick={()=>removeFromWishlistHandler(data._id)}
                       />
                     ) : (
                       <AiOutlineHeart
@@ -158,6 +180,7 @@ const ProductDetails = ({ data }) => {
                         className="cursor-pointer"
                         color={click ? "red" : "#333"}
                         title="Add to wishlist"
+                        onClick={()=>addToWishlistHandler(data._id)}
                       />
                     )}
                   </div>

@@ -3,9 +3,28 @@ import { Link } from 'react-router-dom'
 import styles from '../../styles/style'
 import { AiFillHeart, AiFillStar, AiOutlineEye, AiOutlineHdd, AiOutlineHeart, AiOutlineShoppingCart, AiOutlineStar } from 'react-icons/ai'
 import ProductDetailsCard from '../productDetailsCard/ProductDetailsCard'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToCart } from '../../redux/actions/cart'
 
 const ProductCard = ({data}) => {
+ const dispatch=useDispatch()
+     const addToCartHandler=(id)=>{
+    
+        const isItemExist =cart && cart.find((i) => i._id === id)
+        if(isItemExist){
+          alert("item alread exist in cart")
+        }else{
+          
+              const cartData={...data,qty:1}
+              dispatch(addToCart(cartData))
+              alert("addded to cart uccessfully ")
+            }
+        }
+    
+      
+    
+
+    
     const {cart}=useSelector((state)=> state.cart)
 const[click,setClick]=useState(false)
 const[open,setOpen]=useState(false)
@@ -76,7 +95,7 @@ className='w-full h-[170px] object-contain' />
         
 <AiOutlineShoppingCart
  size={25} className='cursor-pointer absolute right-2 top-24'
-        onClick={()=>setOpen(!open)}
+        onClick={()=>setOpen(!open) ||addToCartHandler(data) }
         color="#444"
         title='Add to cart '/>
 

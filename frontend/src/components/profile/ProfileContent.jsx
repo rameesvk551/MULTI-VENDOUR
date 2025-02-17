@@ -16,6 +16,7 @@ import {Country,State,city} from "country-state-city"
 import styles from "../../styles/style";
 import { addAddress, deleteAddress, updateUserInfo } from "../../redux/actions/user";
 import axios from "axios";
+import { getAllOrdersOfUser } from "../../redux/actions/order";
 
 
 
@@ -188,107 +189,88 @@ const ProfileContent = ({ active }) =>  {
 };
 
 const AllOrders = () => {
-    const orders = [
-      {
-        _id: "r4erkg3-rgvbfr3krgtvbofvdoo",
-        orderItems: [
-          {
-            name: "I Phone 14",
-          },
-        ],
-        totalPrice: 120,
-        orderStatus: "processing",
+  const { user } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllOrdersOfUser(user._id));
+  }, []);
+
+  const columns = [
+    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 130,
+      flex: 0.7,
+      cellClassName: (params) => {
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
       },
-      {
-        _id: "r4erkg3-rgvbfr3krgtvbofvdoo",
-        orderItems: [
-          {
-            name: "I Phone 14",
-          },
-        ],
-        totalPrice: 189,
-        orderStatus: "pending",
-      },
-      {
-        _id: "r4erkg3-rgvbfr3krgtvbofvdoo",
-        orderItems: [
-          {
-            name: "I Phone 12",
-          },
-        ],
-        totalPrice: 180,
-        orderStatus: "shipped",
-      },
-    ];
-  
-    const columns = [
-      { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
-      {
-        field: "status",
-        headerName: "Status",
-        minWidth: 130,
-        flex: 0.7,
-        cellClassName: (params) => {
-          return params.row.status === "Delivered" ? "greenColor" : "redColor";
-        },
-      },
-      {
-        field: "itemsQty",
-        headerName: "Items Qty",
-        type: "number",
-        minWidth: 130,
-        flex: 0.7,
-      },
-      {
-        field: "total",
-        headerName: "Total",
-        type: "number",
-        minWidth: 130,
-        flex: 0.8,
-      },
-      {
-        field: " ",
-        flex: 1,
-        minWidth: 150,
-        headerName: "",
-        type: "number",
-        sortable: false,
-        renderCell: (params) => {
-          return (
+    }
+    ,
+    {
+      field: "itemsQty",
+      headerName: "Items Qty",
+      type: "number",
+      minWidth: 130,
+      flex: 0.7,
+    },
+
+    {
+      field: "total",
+      headerName: "Total",
+      type: "number",
+      minWidth: 130,
+      flex: 0.8,
+    },
+
+    {
+      field: " ",
+      flex: 1,
+      minWidth: 150,
+      headerName: "",
+      type: "number",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <>
             <Link to={`/user/order/${params.id}`}>
               <Button>
                 <AiOutlineArrowRight size={20} />
               </Button>
             </Link>
-          );
-        },
+          </>
+        );
       },
-    ];
-  
-    const row = [];
-  
+    },
+  ];
+
+  const row = [];
+
+  orders &&
     orders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
-        status: item.orderStatus,
+        status: item.status,
       });
     });
-  
-    return (
-      <div className="pl-8 pt-1">
-        <DataGrid
-          rows={row}
-          columns={columns}
-          pageSize={10}
-          disableSelectionOnClick
-          autoHeight
-        />
-      </div>
-    );
-  };
-  
+
+  return (
+    <div className="pl-8 pt-1">
+      <DataGrid
+        rows={row}
+        columns={columns}
+        pageSize={10}
+        disableSelectionOnClick
+        autoHeight
+      />
+    </div>
+  );
+};
   const AllRefundOrders = () => {
     const eligibleOrders = [
       {

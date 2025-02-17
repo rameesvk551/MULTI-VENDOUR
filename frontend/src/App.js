@@ -13,6 +13,8 @@ import {
   ShopActivationPage,
   ShopHomePage,
   CheckoutPage,
+  PaymentPage,
+  OrderSuccessPage,
 } from "./ROUTES/Routes";
 import { useEffect } from "react";
 import { loadSeller, loadUser } from "./redux/actions/user";
@@ -96,6 +98,18 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+               <Route
+              path="/payment"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  {" "}
+                  <PaymentPage />
+                </ProtectedRoute>
+              }
+            />
+
+<Route path="/order/success" element={<OrderSuccessPage />} />
+
 
             <Route path="/shop-create" element={<ShopCreatePage />} />
             <Route path="/shop-login" element={<ShopLoginPage />} />
