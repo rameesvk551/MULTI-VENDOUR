@@ -32,14 +32,16 @@ export const getAllOrdersOfShop = (shopId) => async (dispatch) => {
     });
 
     const { data } = await axios.get(
-      `${server}/order/get-seller-all-orders/${shopId}`
-    );
+      `${server}shop/get-seller-all-orders/${shopId}`
+    )
 
     dispatch({
       type: "getAllOrdersShopSuccess",
       payload: data.orders,
     });
   } catch (error) {
+    console.log(error);
+    
     dispatch({
       type: "getAllOrdersShopFailed",
       payload: error.response.data.message,

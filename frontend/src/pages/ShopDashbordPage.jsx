@@ -1,6 +1,7 @@
 import React from 'react'
 import DashboardHeader from '../components/shop/Layout/DashbordHeader'
 import DashboardSideBar from '../components/shop/Layout/DashbordSideBar'
+import DashboardHero from '../components/shop/DashboardHero'
 
 const ShopDashbordPage = () => {
   return (
@@ -10,6 +11,7 @@ const ShopDashbordPage = () => {
        <div className="w-[330px]">
         <DashboardSideBar active={1}/>
        </div>
+       <DashboardHero/>
       </div>
     </div>
   )

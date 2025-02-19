@@ -15,7 +15,7 @@ const ProductDetailsPage = () => {
    
       const product = allProducts.find((i) => i._id === id );
       setData(product);
-      console.log("da","idddddddd",id ,product);
+  ;
     
   }, []);
  

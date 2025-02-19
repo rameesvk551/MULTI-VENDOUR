@@ -5,7 +5,7 @@ const { upload } = require("../multer");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { fs } = require("fs");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { isSeller } = require("../middleware/auth");
+const { isSeller, isAuthenticated } = require("../middleware/auth");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
 
@@ -57,10 +57,8 @@ router.post(
 
 router.get("/get-all-product-of-shop/:id", catchAsyncErrors( async (req, res, next) => {
   try {
-    console.log(" Shop ID:", req.params.id); 
-    const products = await Product.find({ shopId: req.params.id });
 
-    console.log(" Products Found:", products);  
+    const products = await Product.find({ shopId: req.params.id });
 
     return res.status(200).json({
       success: true,
@@ -73,19 +71,84 @@ router.get("/get-all-product-of-shop/:id", catchAsyncErrors( async (req, res, ne
 }));
 
 
-router.get("/get-all-products",catchAsyncErrors(async(req,res,next)=>{
+router.get("/get-all-products", catchAsyncErrors(async (req, res, next) => {
   try {
-    const allProducts=await Product.find()
-  return res.status(200).json({
-    success: true,
-    allProducts,
-  });
+    const allProducts = await Product.find()
+    .populate("reviews.user", "name avatar") 
+    .populate("shopId");
+     console.log("aaaaaaaaal pro",allProducts);
+     
+    return res.status(200).json({
+      success: true,
+      allProducts,
+    });
   } catch (error) {
-    return next(new ErrorHandler(error, 400));
-    
+    return next(new ErrorHandler(error.message, 400));
   }
+}));
 
-}))
+// review for a product
+router.put(
+  "/create-new-review",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { user, rating, comment, productId, orderId } = req.body;
+      console.log("revvvvvvvvvvvvvvvvvvi",req.body);
+      
+      const product = await Product.findById(productId);
+  
+      const review = {
+        user,
+        rating,
+        comment,
+        productId,
+      };
+      console.log("ppppro founded");
+      const isReviewed = product.reviews.find(
+        (rev) => rev.user._id === req.user._id
+      );
+
+      if (isReviewed) {
+        product.reviews.forEach((rev) => {
+          if (rev.user._id === req.user._id) {
+            (rev.rating = rating), (rev.comment = comment), (rev.user = user);
+          }
+        });
+      } else {
+        console.log("pushing")
+        product.reviews.push(review);
+        console.log("pushed");
+        
+      }
+
+      let avg = 0;
+
+      product.reviews.forEach((rev) => {
+        avg += rev.rating;
+      });
+
+      product.ratings = avg / product.reviews.length;
+
+      await product.save({ validateBeforeSave: false });
+
+      await Order.findByIdAndUpdate(
+        orderId,
+        { $set: { "cart.$[elem].isReviewed": true } },
+        { arrayFilters: [{ "elem._id": productId }], new: true }
+      );
+       console.log("reviewed succseefully");
+       
+      res.status(200).json({
+        success: true,
+        message: "Reviwed succesfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
 
 
 module.exports = router;

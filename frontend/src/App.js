@@ -15,6 +15,15 @@ import {
   CheckoutPage,
   PaymentPage,
   OrderSuccessPage,
+  TrackOrderPage,
+  OrderDetailsPage,
+  AdminDashboardWithdraw,
+  AdminDashboardSellers,
+  AdminDashboardUsers,
+  AdminDashboardPage,
+  AdminDashboardOrders,
+  AdminDashboardProducts,
+  AdminDashboardEvents,
 } from "./ROUTES/Routes";
 import { useEffect } from "react";
 import { loadSeller, loadUser } from "./redux/actions/user";
@@ -24,13 +33,16 @@ import ProtectedRoute from "./ROUTES/ProtectedRoutes";
 import {
   ShopAllCoupouns,
   ShopAllEvents,
+  ShopAllOrders,
   ShopAllProducts,
   ShopCreateEvents,
   ShopCreateProduct,
   ShopDashbordPage,
   ShopInboxPage,
   ShopLoginPage,
+  ShopOrderDetails,
   ShopSettingsPage,
+  ShopWithDrawMoneyPage,
 } from "./ROUTES/ShopRoutes";
 import SellerProtectedRoute from "./ROUTES/SellerProtectedRoute";
 import { getAllEvents } from "./redux/actions/event";
@@ -89,6 +101,22 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+             <Route
+          path="/dashboard-withdraw-money"
+          element={
+            <SellerProtectedRoute  isSeller={isSeller} isLoading={isLoading}>
+              <ShopWithDrawMoneyPage />
+            </SellerProtectedRoute>
+          }
+        />
+                 <Route
+          path="/user/order/:id"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <OrderDetailsPage />
+            </ProtectedRoute>
+          }
+        />
             <Route
               path="/checkout"
               element={
@@ -122,6 +150,41 @@ const App = () => {
                 </SellerProtectedRoute>
               }
             />
+                <Route
+              path="/dashboard-orders"
+              element={
+                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
+                  {""}
+                  <ShopAllOrders />
+                </SellerProtectedRoute>
+              }
+            />
+                <Route
+          path="/order/:id"
+          element={
+            <SellerProtectedRoute  isSeller={isSeller} isLoading={isLoading}>
+              <ShopOrderDetails />
+            </SellerProtectedRoute>
+          }
+        />
+            
+            <Route
+          path="/user/track/order/:id"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <TrackOrderPage />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path=""
+          element={
+            <ProtectedRoute>
+              <TrackOrderPage />
+            </ProtectedRoute>
+          }
+        />
+           
                <Route
           path="/shop/:id"
           element={
@@ -172,16 +235,67 @@ const App = () => {
                 </SellerProtectedRoute>
               }
             />
-{/**<Route
-              path="/dashboard-messages"
-              element={
-                <SellerProtectedRoute isSeller={isSeller} isLoading={isLoading}>
-                  <ShopInboxPage/>
-                </SellerProtectedRoute>
-              }
-            /> */}
+
 
             <Route path="/dashboard-products" element={<ShopAllProducts />} />
+             {/* Admin Routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+           
+              <AdminDashboardPage />
+         
+          }
+        />
+         <Route
+          path="/admin-users"
+          element={
+     
+              <AdminDashboardUsers />
+         
+          }
+        />
+        <Route
+          path="/admin-sellers"
+          element={
+           
+              <AdminDashboardSellers />
+            
+          }
+        />
+        <Route
+          path="/admin-orders"
+          element={
+          
+              <AdminDashboardOrders/>
+          
+          }
+        />
+         <Route
+          path="/admin-products"
+          element={
+           
+              <AdminDashboardProducts />
+       
+          }
+        />
+         <Route
+          path="/admin-events"
+          element={
+          
+              <AdminDashboardEvents />
+        
+          }
+        />
+         <Route
+          path="/admin-withdraw-request"
+          element={
+           
+              <AdminDashboardWithdraw />
+           
+          }
+        />
+      
           </Routes>
         </BrowserRouter>
       )}

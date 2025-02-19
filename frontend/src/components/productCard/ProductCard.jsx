@@ -37,11 +37,11 @@ const[open,setOpen]=useState(false)
 
         </div>
 <Link to={`/product/${data._id}`}>
-<img src={data.images} alt="" 
+<img src={data?.images} alt="" 
 className='w-full h-[170px] object-contain' />
 </Link>
 <Link to="/">
-<h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
+<h5 className={`${styles.shop_name}`}>{data?.shopId?.name}</h5>
 </Link>
 
 <Link to={`/product/${data._id}`}>

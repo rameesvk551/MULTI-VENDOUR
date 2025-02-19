@@ -5,15 +5,19 @@ import { productData } from "../../static/data";
 
 import styles from "../../styles/style";
 import ProductCard from "../productCard/ProductCard";
+import Ratings from "../products/Ratings";
 
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
+
  const events =0
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  
+  const allReviews =
+  products && products.map((product) => product.reviews).flat();
+
 
   const [active, setActive] = useState(1);
 
@@ -66,8 +70,8 @@ const ShopProfileData = ({ isOwner }) => {
       <br />
       {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-          {productData &&
-            productData.map((i, index) => (
+          {products &&
+            products.map((i, index) => (
               <ProductCard data={i} key={index} isShop={true} />
             ))}
         </div>
@@ -90,16 +94,38 @@ const ShopProfileData = ({ isOwner }) => {
             <h5 className="w-full text-center py-5 text-[18px]">
               No Events have for this shop!
             </h5>
-          )}
+          )}:(
+            <>
+            </>
+          )
         </div>
       )}
 
-      {active === 3 && (
+{active === 3 && (
         <div className="w-full">
+          {allReviews &&
+            allReviews.map((item, index) => (
+              <div className="w-full flex my-4">
+                <img
+                  src={`${item.user.avatar?.url}`}
+                  className="w-[50px] h-[50px] rounded-full"
+                  alt=""
+                />
+                <div className="pl-2">
+                  <div className="flex w-full items-center">
+                    <h1 className="font-[600] pr-2">{item.user.name}</h1>
+                    <Ratings rating={item.rating} />
+                  </div>
+                  <p className="font-[400] text-[#000000a7]">{item?.comment}</p>
+                  <p className="text-[#000000a7] text-[14px]">{"2days ago"}</p>
+                </div>
+              </div>
+            ))}
+          {allReviews && allReviews.length === 0 && (
             <h5 className="w-full text-center py-5 text-[18px]">
               No Reviews have for this shop!
             </h5>
-          
+          )}
         </div>
       )}
     </div>

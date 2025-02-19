@@ -149,7 +149,7 @@ const Header = ({activeHeading}) => {
 {
     isAuthenticated ? (
         <Link to='/profile'>
-       {<img src={`${backend_url}${user.avatar}`} alt="" clasName=" w-[40px] h-[35px] rounded-full" />}
+       {<img src={`${backend_url}${user.avatar}`} alt="" className=" w-[40px] h-[35px] rounded-full" />}
         </Link>
 
     ):(
@@ -292,41 +292,9 @@ const Header = ({activeHeading}) => {
               <br />
 
               <div className="flex w-full justify-center">
-                {isAuthenticated ? (
-                  <div>
-                    <Link to="/profile">
-                    (
-                  <div>
-                    <Link to="/profile">
-                    <img
-  src={`${backend_url}${user.avatar}`}
-  alt=""
-  className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88] object-cover"
-/>
+ 
+</div>
 
-                    </Link>
-                  </div>
-                )
-
-                    </Link>
-                  </div>
-                ) : (
-                  <>
-                    <Link
-                      to="/login"
-                      className="text-[18px] pr-[10px] text-[#000000b7]"
-                    >
-                      Login /
-                    </Link>
-                    <Link
-                      to="/sign-up"
-                      className="text-[18px] text-[#000000b7]"
-                    >
-                      Sign up
-                    </Link>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         )}

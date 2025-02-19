@@ -388,58 +388,17 @@ const AllOrders = () => {
 
 
   const TrackOrder = () => {
-    // Dummy data for orders
-    const orders = [
-      {
-        _id: "order1",
-        cart: [
-          {
-            name: "Smartphone",
-          },
-          {
-            name: "Headphones",
-          },
-        ],
-        totalPrice: 350,
-        orderStatus: "Processing",
-      },
-      {
-        _id: "order2",
-        cart: [
-          {
-            name: "Laptop",
-          },
-        ],
-        totalPrice: 1000,
-        orderStatus: "Shipped",
-      },
-      {
-        _id: "order3",
-        cart: [
-          {
-            name: "Tablet",
-          },
-          {
-            name: "Stylus Pen",
-          },
-        ],
-        totalPrice: 500,
-        orderStatus: "Delivered",
-      },
-      {
-        _id: "order4",
-        cart: [
-          {
-            name: "Smartwatch",
-          },
-        ],
-        totalPrice: 200,
-        orderStatus: "Cancelled",
-      },
-    ];
+    const { user } = useSelector((state) => state.user);
+    const { orders } = useSelector((state) => state.order);
+    const dispatch = useDispatch();
+  
+    useEffect(() => {
+      dispatch(getAllOrdersOfUser(user._id));
+    }, []);
   
     const columns = [
       { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+  
       {
         field: "status",
         headerName: "Status",
@@ -456,6 +415,7 @@ const AllOrders = () => {
         minWidth: 130,
         flex: 0.7,
       },
+  
       {
         field: "total",
         headerName: "Total",
@@ -463,6 +423,7 @@ const AllOrders = () => {
         minWidth: 130,
         flex: 0.8,
       },
+  
       {
         field: " ",
         flex: 1,
@@ -472,27 +433,34 @@ const AllOrders = () => {
         sortable: false,
         renderCell: (params) => {
           return (
-            <Link to={`/user/track/order/${params.id}`}>
-              <Button>
-                <MdTrackChanges size={20} />
-              </Button>
-            </Link>
+            <>
+              <Link to={`/user/track/order/${params.id}`}>
+                <Button>
+                  <MdTrackChanges size={20} />
+                </Button>
+              </Link>
+            </>
           );
         },
       },
     ];
   
-    const rows = orders.map((item) => ({
-      id: item._id,
-      itemsQty: item.cart.length,
-      total: `US$ ${item.totalPrice}`,
-      status: item.orderStatus,
-    }));
+    const row = [];
+  
+    orders &&
+      orders.forEach((item) => {
+        row.push({
+          id: item._id,
+          itemsQty: item.cart.length,
+          total: "US$ " + item.totalPrice,
+          status: item.status,
+        });
+      });
   
     return (
       <div className="pl-8 pt-1">
         <DataGrid
-          rows={rows}
+          rows={row}
           columns={columns}
           pageSize={10}
           disableSelectionOnClick

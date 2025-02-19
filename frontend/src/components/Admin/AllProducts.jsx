@@ -4,39 +4,21 @@ import React, { useEffect } from "react";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {  getAllProductsShop} from "../../redux/actions/product";
+import { getAllProductsShop } from "../../redux/actions/product";
 import { deleteProduct } from "../../redux/actions/product";
 import Loader from "../Layout/Loader";
-import { loadSeller } from '../../redux/actions/user';
+import axios from "axios";
+import { server } from "../../server";
+import { useState } from "react";
 
 const AllProducts = () => {
-  const dispatch = useDispatch();
-  const { products, isProductLoading } = useSelector((state) => state.products);
+  const [data, setData] = useState([]);
 
-  const { seller, isLoading } = useSelector((state) => state.seller);
-
-
-  
   useEffect(() => {
-    if (!isLoading && seller?._id) {
-      console.log("Dispatching getAllProductsOfShop for seller:", seller._id);
-      dispatch(getAllProductsShop(seller._id));
-      console.log("products are",products,isProductLoading);
-      
-    }
-  }, [dispatch, seller, isLoading]);
-
-  
- 
-
- 
-
-  const handleDelete = (id) => {
-    console.log(id);
-    
-    dispatch(deleteProduct(id))
-
-  };
+    axios.get(`${server}/product/admin-all-products`, {withCredentials: true}).then((res) => {
+        setData(res.data.products);
+    })
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
@@ -86,33 +68,16 @@ const AllProducts = () => {
         );
       },
     },
-    {
-      field: "Delete",
-      flex: 0.8,
-      minWidth: 120,
-      headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Button onClick={() => handleDelete(params.id)}>
-              <AiOutlineDelete size={20} />
-            </Button>
-          </>
-        );
-      },
-    },
   ];
 
   const row = [];
 
-  products &&
-    products.forEach((item) => {
+  data &&
+  data.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
-        price: "₹ " + item.discountPrice,
+        price: "US$ " + item.discountPrice,
         Stock: item.stock,
         sold: item?.sold_out,
       });
@@ -120,9 +85,6 @@ const AllProducts = () => {
 
   return (
     <>
-      {isLoading ? (
-       <h1>LOaaaaaaaaading</h1>
-      ) : (
         <div className="w-full mx-8 pt-1 mt-10 bg-white">
           <DataGrid
             rows={row}
@@ -132,7 +94,6 @@ const AllProducts = () => {
             autoHeight
           />
         </div>
-      )}
     </>
   );
 };
