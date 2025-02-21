@@ -9,6 +9,7 @@ import { getAllOrdersOfAdmin } from "../../redux/actions/order";
 import Loader from "../Layout/Loader";
 import { getAllSellers } from "../../redux/actions/seller";
 import styles from "../../styles/style";
+import { getAllUsers } from "../../redux/actions/user";
 
 const AdminDashboardMain = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ const AdminDashboardMain = () => {
   useEffect(() => {
     dispatch(getAllOrdersOfAdmin());
     dispatch(getAllSellers());
+ 
   }, []);
 
    const adminEarning = adminOrders && adminOrders.reduce((acc,item) => acc + item.totalPrice * .10, 0);
@@ -35,11 +37,9 @@ const AdminDashboardMain = () => {
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.getValue(params.id, "status") === "Delivered"
-          ? "greenColor"
-          : "redColor";
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
       },
-    },
+    },,
     {
       field: "itemsQty",
       headerName: "Items Qty",

@@ -32,7 +32,7 @@ const Checkout = () => {
     await axios.get(`${server}/coupon/get-coupon-value/${name}`).then((res) => {
       const shopId = res?.data?.couponCode?.shopId;
       const couponCodeValue = res?.data?.couponCode?.value;
-      console.log("rtespoponse for coupon code ",shopId);
+      console.log("rtespoponse for coupon code ",shopId +"and  productseller Id  ",cart?.shopId?._id  );
       
       if (res.couponCode !== null) {
         const iscouponValid =

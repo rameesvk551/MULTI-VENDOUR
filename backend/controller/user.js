@@ -10,7 +10,7 @@ const sendMail = require("../utils/sendMail")
 const catchAsyncErrors = require("../middleware/catchAsyncErrors")
 const bcrypt=require("bcrypt")
 const sendToken = require("../utils/jwtToken")
-const { isAuthenticated } = require("../middleware/auth")
+const { isAuthenticated, isAdmin } = require("../middleware/auth")
 const { log } = require("console")
 const { loadavg } = require("os")
 // create user
@@ -295,6 +295,26 @@ if (!addressId) {
   
 
 }))
+
+// all users --- for admin
+router.get(
+  "/admin-all-users",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const users = await User.find().sort({
+        createdAt: -1,
+      });
+      res.status(201).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 
 module.exports = router

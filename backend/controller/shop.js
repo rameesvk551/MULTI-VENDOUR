@@ -7,7 +7,7 @@ const { fs } = require("fs")
 const catchAsyncErrors = require("../middleware/catchAsyncErrors")
 const Shop = require("../model/shop")
 const { sendShopToken, sendUserToken } = require("../utils/jwtToken")
-const { isSeller } = require("../middleware/auth")
+const { isSeller, isAdmin, isAuthenticated } = require("../middleware/auth")
 
 
 
@@ -149,5 +149,55 @@ router.put("/update-shop-info", isSeller, catchAsyncErrors(async (req, res, next
   
  }
 }));
+
+
+// all sellers --- for admin
+router.get(
+  "/admin-all-sellers",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const sellers = await Shop.find().sort({
+        createdAt: -1,
+      });
+      console.log("findedshops",sellers);
+      
+      res.status(201).json({
+        success: true,
+        sellers,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// delete seller ---admin
+router.delete(
+  "/delete-seller/:id",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const seller = await Shop.findById(req.params.id);
+
+      if (!seller) {
+        return next(
+          new ErrorHandler("Seller is not available with this id", 400)
+        );
+      }
+
+      await Shop.findByIdAndDelete(req.params.id);
+
+      res.status(201).json({
+        success: true,
+        message: "Seller deleted successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
   module.exports = router

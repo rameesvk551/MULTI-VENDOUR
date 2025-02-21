@@ -5,10 +5,7 @@ const User = require("../model/user");
 const shop = require("../model/shop");
 
 exports.isAuthenticated = catchAsyncErrors(async (req, res, next) => {
-  console.log("reqqqqqqqqqqqqq", req.cookies);
-
   const { userToken } = req.cookies;
-
   if (!userToken) {
     return next(new ErrorHandler("Please login to continue", 401));
   }
@@ -33,3 +30,12 @@ exports.isSeller = catchAsyncErrors(async (req, res, next) => {
 
   next();
 });
+
+exports.isAdmin = (...roles) => {
+  return (req,res,next) => {
+      if(!roles.includes(req.user.role)){
+          return next(new ErrorHandler(`${req.user.role} can not access this resources!`))
+      };
+      next();
+  }
+}

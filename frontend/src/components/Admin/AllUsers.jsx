@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getAllUsers } from "../../redux/actions/user";
@@ -17,19 +17,23 @@ const AllUsers = () => {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
 
-  useEffect(() => {
-    dispatch(getAllUsers());
+  
+
+  
+
+  const getAllUsers = useCallback(() => {
+    dispatch(getAllUsers()); // Assuming fetchAllUsers is your action creator
   }, [dispatch]);
-
+  
   const handleDelete = async (id) => {
-    await axios
-    .delete(`${server}/user/delete-user/${id}`, { withCredentials: true })
-    .then((res) => {
-      toast.success(res.data.message);
-    });
-
-  dispatch(getAllUsers());
+    try {
+      await axios.delete(`${server}/user/delete-user/${id}`, { withCredentials: true });
+      dispatch(getAllUsers()); // Now it updates only after delete is successful
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
+  
 
   const columns = [
     { field: "id", headerName: "User ID", minWidth: 150, flex: 0.7 },

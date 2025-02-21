@@ -21,7 +21,10 @@ export const orderReducer = createReducer(initialState, (builder) => {
     
     // get all orders of shop
     .addCase("getAllOrdersShopRequest", (state) => {
+      console.log("dispatching all products of shop");
+      
       state.isLoading = true;
+      
     })
     .addCase("getAllOrdersShopSuccess", (state, action) => {
       state.isLoading = false;

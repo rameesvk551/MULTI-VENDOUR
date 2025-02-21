@@ -26,15 +26,18 @@ export const getAllOrdersOfUser = (userId) => async (dispatch) => {
 
 // get all orders of seller
 export const getAllOrdersOfShop = (shopId) => async (dispatch) => {
+
   try {
+    console.log("shhhhhhhd",shopId);
+    
     dispatch({
       type: "getAllOrdersShopRequest",
     });
 
     const { data } = await axios.get(
-      `${server}shop/get-seller-all-orders/${shopId}`
+      `${server}/order/get-seller-all-orders/${shopId}`
     )
-
+    console.log("shhhhhhhhhhhhhhop oooooooorderssssss",data);
     dispatch({
       type: "getAllOrdersShopSuccess",
       payload: data.orders,
@@ -71,3 +74,5 @@ export const getAllOrdersOfAdmin = () => async (dispatch) => {
     });
   }
 };
+
+

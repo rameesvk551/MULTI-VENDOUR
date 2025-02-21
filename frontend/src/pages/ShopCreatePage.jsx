@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import ShopCreate from '../components/shop/ShopCreate'
 
 const ShopCreatePage = () => {
@@ -10,3 +10,7 @@ const ShopCreatePage = () => {
 }
 
 export default ShopCreatePage
+
+
+
+

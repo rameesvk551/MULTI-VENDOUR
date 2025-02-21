@@ -4,6 +4,8 @@ import { server } from "../../server";
 // get all sellers --- admin
 export const getAllSellers = () => async (dispatch) => {
   try {
+    console.log("geting all sellers");
+    
     dispatch({
       type: "getAllSellersRequest",
     });
@@ -11,7 +13,8 @@ export const getAllSellers = () => async (dispatch) => {
     const { data } = await axios.get(`${server}/shop/admin-all-sellers`, {
       withCredentials: true,
     });
-
+     console.log("ddddddata",data);
+     
     dispatch({
       type: "getAllSellersSuccess",
       payload: data.sellers,

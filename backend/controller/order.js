@@ -72,9 +72,9 @@ router.get(
 
 // get all orders of seller
 router.get(
-  "/get-all-orders-of-seller/:shopId",
+  "/get-seller-all-orders/:shopId",
   catchAsyncErrors(async (req, res, next) => {
-    console.log("enterrrredd");
+    console.log("enterrrrevdgrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrg  htttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttdd");
     
     try {
       const orders = await Order.find({
@@ -146,6 +146,27 @@ router.put(
 
         await seller.save();
       }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// all orders --- for admin
+router.get(
+  "/admin-all-orders",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const orders = await Order.find().sort({
+        deliveredAt: -1,
+        createdAt: -1,
+      });
+      res.status(201).json({
+        success: true,
+        orders,
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
